@@ -6,6 +6,7 @@
 #include "Engine/Input.h"
 #include "Engine/RootJob.h"
 #include "Engine/Model.h"
+#include "Engine/Quad.h"
 
 #pragma comment(lib, "winmm.lib")
 
@@ -85,6 +86,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 	Camera::Initialize(winW, winH);
 
+
+	Quad* pQuad = new Quad;
+	hr = pQuad->Initialize();
+
 	pRootJob = new RootJob(nullptr);
 	pRootJob->Initialize();
 	
@@ -150,6 +155,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			//描画
 			Direct3D::BeginDraw();
 
+
+			
+			Transform mat;
+			mat.scale_.x = 2.0f;
+			mat.scale_.y = 2.0f;
+			pQuad->Draw(mat);
 			//ルートジョブから、すべてのオブジェクトのドローを呼ぶ
 			pRootJob->DrawSub();
 
@@ -160,6 +171,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	
 	Model::Release();
 	pRootJob->ReleaseSub();
+	SAFE_RELEASE(pQuad);
 	SAFE_DELETE(pRootJob);
 	Input::Release();
 	Direct3D::Release();
