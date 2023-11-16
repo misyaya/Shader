@@ -56,22 +56,34 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 //───────────────────────────────────────
 float4 PS(VS_OUT inData) : SV_Target
 {
-	float4 lightSource = float4(1.0, 1.0, 1.0, 0.0); //RGB
-	float4 ambientSource = float4(0.5, 0.5, 0.5, 1.0);
-	float4 diffuse;
-	float4 ambient;
+	//float4 lightSource = float4(1.0, 1.0, 1.0, 0.0); //RGB
+	//float4 ambientSource = float4(0.5, 0.5, 0.5, 1.0);
+	//float4 diffuse;
+	//float4 ambient;
 
-	if (isTexture == false)
-	{
-		diffuse = lightSource * diffuseColor * inData.color;
-		ambient = lightSource * diffuseColor * ambientSource;
-	}
-	else
-	{
-		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * inData.color;
-		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientSource;
-	}
+	//if (isTexture == false)
+	//{
+	//	diffuse = lightSource * diffuseColor * inData.color;
+	//	ambient = lightSource * diffuseColor * ambientSource;
+	//}
+	//else
+	//{
+	//	diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * inData.color;
+	//	ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientSource;
+	//}
+	//return (diffuse + ambient);
+
 	
-	return (diffuse + ambient);
+	//float4 output = g_texture.Sample(g_sampler, inData.uv);
+	float4 output = g_texture.Sample(g_sampler, inData.uv);
+
+	//グレースケール変換
+	float grayValue = dot(output.rgb, float3(0.298912, 0.586611, 0.114478));
+	float4 grayColor = float4(grayValue, grayValue, grayValue, output.a);
+
+	//float4 output = floor(g_texture.Sample(g_sampler, inData.uv)*8.0)/8;
+	
+
+	return grayColor;
 
 }
