@@ -4,7 +4,17 @@
 //◆◆◆を管理するクラス
 class Stage : public GameObject
 {
-    int hModel_;    //モデル番号
+    int hGround_;    //モデル番号
+    int hBall_;
+    int hArrowX_;
+    int hArrowY_;
+    int hArrowZ_;
+
+    Transform ground;
+    Transform ball;
+    Transform arrowX;
+    Transform arrowY;
+    Transform arrowZ;
 public:
     //コンストラクタ
     Stage(GameObject* parent);

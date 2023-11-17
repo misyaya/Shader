@@ -87,8 +87,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	Camera::Initialize(winW, winH);
 
 
-	Quad* pQuad = new Quad;
-	hr = pQuad->Initialize();
+	//Quad* pQuad = new Quad;
+	//hr = pQuad->Initialize();
 
 	pRootJob = new RootJob(nullptr);
 	pRootJob->Initialize();
@@ -160,7 +160,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			Transform mat;
 			mat.scale_.x = 2.0f;
 			mat.scale_.y = 2.0f;
-			pQuad->Draw(mat);
+			//pQuad->Draw(mat);
 			//ルートジョブから、すべてのオブジェクトのドローを呼ぶ
 			pRootJob->DrawSub();
 
@@ -171,7 +171,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	
 	Model::Release();
 	pRootJob->ReleaseSub();
-	SAFE_RELEASE(pQuad);
+	//SAFE_RELEASE(pQuad);
 	SAFE_DELETE(pRootJob);
 	Input::Release();
 	Direct3D::Release();

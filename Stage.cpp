@@ -3,7 +3,7 @@
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage"), hModel_(-1)
+    :GameObject(parent, "Stage"), hGround_(-1), hBall_(-1), hArrowX_(-1)
 {
 }
 
@@ -15,22 +15,64 @@ Stage::~Stage()
 //初期化
 void Stage::Initialize()
 {
-    //モデルデータのロード
-    hModel_ = Model::Load("Assets/BoxDefault.fbx");
-    assert(hModel_ >= 0);
+    // 床
+    hGround_ = Model::Load("Assets/ground.fbx");
+    assert(hGround_ >= 0);
+
+    // ボール
+    hBall_ = Model::Load("Assets/ball.fbx");
+    assert(hBall_ >= 0);
+
+    // Xアロー
+    hArrowX_ = Model::Load("Assets/arrow.fbx");
+    assert(hArrowX_ >= 0);
+
+    // Yアロー
+    hArrowY_ = Model::Load("Assets/arrow.fbx");
+    assert(hArrowY_ >= 0);
+
+    // Xアロー
+    hArrowZ_ = Model::Load("Assets/arrow.fbx");
+    assert(hArrowZ_ >= 0);
+
+    ground.scale_ = XMFLOAT3(2.0f,2.0f,2.0f);
+    ball.position_.y = 0.5f;
+
+    arrowX.scale_ = XMFLOAT3(0.2f,0.2f,0.2f);
+    arrowX.position_ = XMFLOAT3(0.0f,0.5f,-1.0f);
+
+    arrowY.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
+    arrowY.rotate_.z = 90.0f;
+    arrowY.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
+    
+    arrowZ.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
+    arrowZ.rotate_.y = 90.0f;
+    arrowZ.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
 }
 
 //更新
 void Stage::Update()
 {
-    transform_.rotate_.y += 0.5f;
+    //transform_.rotate_.y += 0.5f;
 }
 
 //描画
 void Stage::Draw()
 {
-    Model::SetTransform(hModel_, transform_);
-    Model::Draw(hModel_);
+   Model::SetTransform(hGround_, ground);
+   Model::Draw(hGround_);
+
+   Model::SetTransform(hBall_, ball);
+   Model::Draw(hBall_);
+
+   Model::SetTransform(hArrowX_, arrowX);
+   Model::Draw(hArrowX_);
+
+   Model::SetTransform(hArrowY_, arrowY);
+   Model::Draw(hArrowY_);
+
+   Model::SetTransform(hArrowZ_, arrowZ);
+   Model::Draw(hArrowZ_);
 }
 
 //開放

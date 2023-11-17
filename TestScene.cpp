@@ -2,7 +2,7 @@
 #include "Stage.h"
 #include "Engine/Input.h"
 #include "Engine/SceneManager.h"
-
+#include "Engine/Camera.h"
 
 TestScene::TestScene(GameObject* parent)
 	:GameObject(parent, "TestScene")
@@ -12,7 +12,11 @@ TestScene::TestScene(GameObject* parent)
 void TestScene::Initialize()
 {
 
-	//Instantiate<Stage>(this);
+	Instantiate<Stage>(this);
+
+	Camera::SetPosition(XMFLOAT3(0, 3, -8));
+
+	Camera::SetTarget(XMFLOAT3(0, 2, 0));
 }
 
 void TestScene::Update()
