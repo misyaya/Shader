@@ -9,12 +9,14 @@ class Stage : public GameObject
     int hArrowX_;
     int hArrowY_;
     int hArrowZ_;
+    int hWall_;
 
     Transform ground;
     Transform ball;
     Transform arrowX;
     Transform arrowY;
     Transform arrowZ;
+    Transform wall;
 public:
     //コンストラクタ
     Stage(GameObject* parent);

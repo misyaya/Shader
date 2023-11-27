@@ -3,7 +3,7 @@
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage"), hGround_(-1), hBall_(-1), hArrowX_(-1)
+    :GameObject(parent, "Stage"), hGround_(-1), hBall_(-1), hArrowX_(-1),hWall_(-1)
 {
 }
 
@@ -35,6 +35,10 @@ void Stage::Initialize()
     hArrowZ_ = Model::Load("Assets/arrow.fbx");
     assert(hArrowZ_ >= 0);
 
+    // 
+    hWall_ = Model::Load("Assets/wall3.fbx");
+    assert(hWall_ >= 0);
+
     ground.scale_ = XMFLOAT3(5.0f,5.0f,5.0f);
 
     ball.position_ = XMFLOAT3(2.0f, 0.5f, 0.5f);
@@ -50,12 +54,14 @@ void Stage::Initialize()
     arrowZ.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
     arrowZ.rotate_.y = 270.0f;
     arrowZ.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
+
+    wall.position_ = XMFLOAT3(0.0f, 1.5f, 0.0f);
 }
 
 //更新
 void Stage::Update()
 {
-    //transform_.rotate_.y += 0.5f;
+    wall.rotate_.y += 0.5f;
 }
 
 //描画
@@ -75,6 +81,9 @@ void Stage::Draw()
 
    Model::SetTransform(hArrowZ_, arrowZ);
    Model::Draw(hArrowZ_);
+
+   Model::SetTransform(hWall_,wall);
+   Model::Draw(hWall_);
 }
 
 //開放
