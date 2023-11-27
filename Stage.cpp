@@ -35,8 +35,10 @@ void Stage::Initialize()
     hArrowZ_ = Model::Load("Assets/arrow.fbx");
     assert(hArrowZ_ >= 0);
 
-    ground.scale_ = XMFLOAT3(2.0f,2.0f,2.0f);
-    ball.position_.y = 0.5f;
+    ground.scale_ = XMFLOAT3(5.0f,5.0f,5.0f);
+
+    ball.position_ = XMFLOAT3(2.0f, 0.5f, 0.5f);
+
 
     arrowX.scale_ = XMFLOAT3(0.2f,0.2f,0.2f);
     arrowX.position_ = XMFLOAT3(0.0f,0.5f,-1.0f);
@@ -46,7 +48,7 @@ void Stage::Initialize()
     arrowY.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
     
     arrowZ.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
-    arrowZ.rotate_.y = 90.0f;
+    arrowZ.rotate_.y = 270.0f;
     arrowZ.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
 }
 
