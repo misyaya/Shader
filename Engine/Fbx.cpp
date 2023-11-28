@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include <assert.h>
 
+const XMFLOAT4 LIGHT_DIERECTION = {-1,-5,-5,-1};
 
 Fbx::Fbx():
 	vertexCount_(0),polygonCount_(0),materialCount_(0),pVertexBuffer_(nullptr),pIndexBuffer_(0),pConstantBuffer_(nullptr),pMaterialList_(nullptr)
@@ -250,6 +251,8 @@ void Fbx::Draw(Transform& transform)
 		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
 		cb.diffuseColor = pMaterialList_[i].diffuse;
+		cb.lightDirection = LIGHT_DIERECTION;
+		XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
 		cb.isTexture = pMaterialList_[i].pTexture_ != nullptr;
 
 		

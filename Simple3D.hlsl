@@ -60,6 +60,7 @@ float4 PS(VS_OUT inData) : SV_Target
 	float4 ambientSource = float4(0.5, 0.5, 0.5, 1.0);
 	float4 diffuse;
 	float4 ambient;
+	float4 specular;
 
 	if (isTexture == false)
 	{
@@ -72,6 +73,8 @@ float4 PS(VS_OUT inData) : SV_Target
 		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientSource;
 	}
 	return (diffuse + ambient);
+
+	//specular = pow(saturate(dot(diffues,ambient),))
 
 	
 	//float4 output = g_texture.Sample(g_sampler, inData.uv);
