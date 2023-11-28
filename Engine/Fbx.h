@@ -28,9 +28,10 @@ class Fbx
 		XMMATRIX	matWVP;  //wvp
 		XMMATRIX	matNormal; //ワールド変換だけのやつ
 		XMFLOAT4	diffuseColor;		// ディフューズカラー（マテリアルの色）
+		BOOL		isTexture;		// テクスチャ貼ってあるかどうか
 		XMFLOAT4	lightDirection; //光源方向
 		XMFLOAT4	eyePos; //視点
-		BOOL		isTexture;		// テクスチャ貼ってあるかどうか
+		
 	};
 
 	struct VERTEX
