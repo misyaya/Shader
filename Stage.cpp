@@ -41,6 +41,7 @@ void Stage::Initialize()
 
     ground.scale_ = XMFLOAT3(5.0f,5.0f,5.0f);
 
+    //ball.position_ = XMFLOAT3(2.0f, 0.5f, 0.5f);
     ball.position_ = XMFLOAT3(2.0f, 0.5f, 0.5f);
 
 
