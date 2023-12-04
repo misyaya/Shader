@@ -25,12 +25,14 @@ class Fbx
 
 	struct CONSTANT_BUFFER
 	{
-		XMMATRIX	matWVP;  //wvp
-		XMMATRIX	matNormal; //ワールド変換だけのやつ
+		XMMATRIX	matWVP;  //wvp ワールドビュープロジェクション
+		XMMATRIX    matW; //w ワールド変換のみ
+		XMMATRIX	matNormal; //スケール×平行移動の逆行列
 		XMFLOAT4	diffuseColor;		// ディフューズカラー（マテリアルの色）
-		BOOL		isTexture;		// テクスチャ貼ってあるかどうか
-		XMFLOAT4	lightDirection; //光源方向
+		XMFLOAT4	lightPosition; //光源方向
 		XMFLOAT4	eyePos; //視点
+		BOOL		isTextured;		// テクスチャ貼ってあるかどうか
+	
 		
 	};
 
@@ -57,11 +59,15 @@ class Fbx
 	void InitIndex(fbxsdk::FbxMesh* mesh);
 	void IntConstantBuffer();
 	void InitMaterial(fbxsdk::FbxNode* pNode);
-
+	bool IsFlatColor_;
+	XMFLOAT4 dColor_;
+	XMFLOAT4 lightSourcePosition_;
 public:
 
 	Fbx();
 	HRESULT Load(std::string fileName);
 	void Draw(Transform& transform);
+	void SetLightPos(XMFLOAT4& pos);
+	XMFLOAT4 GetLightPos() { return (lightSourcePosition_); }
 	void Release();
 };

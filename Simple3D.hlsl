@@ -12,8 +12,11 @@ cbuffer global
 {
 	float4x4	matWVP;			// ワールド・ビュー・プロジェクションの合成行列
 	float4x4	matW;			//ワールド行列
+	float4x4    matNormal;		//ワールド行列
 	float4		diffuseColor;	// ディフューズカラー（マテリアルの色）
-	bool		isTexture;		// テクスチャ貼ってあるかどうか
+	float4      lightPosition;
+	float4      eyePosition;
+	bool		isTextured;		// テクスチャ貼ってあるかどうか
 };
 
 //───────────────────────────────────────
@@ -32,19 +35,38 @@ struct VS_OUT
 VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 {
 	//ピクセルシェーダーへ渡す情報
-	VS_OUT outData;
+	VS_OUT outData = (VS_OUT)0;
 
 	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
 	//スクリーン座標に変換し、ピクセルシェーダーへ
 	outData.pos = mul(pos, matWVP);
 	outData.uv = uv;
+	normal.w = 0;
+	normal = mul(normal, matNormal);
+	normal = normalize(normal);
+	outData.normal = normal;
 
-	//法線を回転
-	normal = mul(normal, matW);
-
-	float4 light = float4(-1, 0.5, -0.7, 0);
+	float light = normalize(lightPosition);
 	light = normalize(light);
-	outData.color = clamp(dot(normal, light), 0, 1);
+
+	OutData.color = saturate(dot(normal, light));
+	float posw = mul(pos.matW);
+	outData.eyev = eyePosition - posw;
+
+	////ピクセルシェーダーへ渡す情報
+	//VS_OUT outData;
+
+	////ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
+	////スクリーン座標に変換し、ピクセルシェーダーへ
+	//outData.pos = mul(pos, matWVP);
+	//outData.uv = uv;
+
+	////法線を回転
+	//normal = mul(normal, matW);
+
+	//float4 light = float4(-1, 0.5, -0.7, 0);
+	//light = normalize(light);
+	//outData.color = clamp(dot(normal, light), 0, 1);
 
 
 	//まとめて出力
@@ -62,7 +84,7 @@ float4 PS(VS_OUT inData) : SV_Target
 	float4 ambient;
 	float4 specular;
 
-	if (isTexture == false)
+	if (isTextured == false)
 	{
 		diffuse = lightSource * diffuseColor * inData.color;
 		ambient = lightSource * diffuseColor * ambientSource;

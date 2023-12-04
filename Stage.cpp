@@ -1,9 +1,10 @@
 #include "Stage.h"
 #include "Engine/Model.h"
+#include "Engine/Input.h"
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage"), hGround_(-1), hBall_(-1), hArrowX_(-1),hWall_(-1)
+    :GameObject(parent, "Stage"), hGround_(-1), hBall_(-1), hArrowX_(-1),hLight_(-1)
 {
 }
 
@@ -15,7 +16,7 @@ Stage::~Stage()
 //初期化
 void Stage::Initialize()
 {
-    // 床
+    // 床SS
     hGround_ = Model::Load("Assets/ground.fbx");
     assert(hGround_ >= 0);
 
@@ -35,9 +36,9 @@ void Stage::Initialize()
     hArrowZ_ = Model::Load("Assets/arrow.fbx");
     assert(hArrowZ_ >= 0);
 
-    // 
-    hWall_ = Model::Load("Assets/wall3.fbx");
-    assert(hWall_ >= 0);
+    // 箱
+    hLight_= Model::Load("Assets/light.fbx");
+    assert(hLight_ >= 0);
 
     ground.scale_ = XMFLOAT3(5.0f,5.0f,5.0f);
 
@@ -56,13 +57,75 @@ void Stage::Initialize()
     arrowZ.rotate_.y = 270.0f;
     arrowZ.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
 
-    wall.position_ = XMFLOAT3(0.0f, 1.5f, 0.0f);
+    light.position_ = XMFLOAT3(0.0f, 1.5f, 0.0f);
+    light.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
 }
 
 //更新
 void Stage::Update()
 {
-    wall.rotate_.y += 0.5f;
+    if (Input::IsKey(DIK_RIGHT))
+    {
+   /* XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+      XMFLOAT4 margin{ p.x + 0.1f, p.y + 0.0f, p.z + 0.0f, p.w + 0.0f };
+
+      Model::SetLightPosition(margin);*/
+    }
+    if (Input::IsKey(DIK_LEFT))
+    {
+        /* XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+           XMFLOAT4 margin{ p.x - 0.1f, p.y  0.0f, p.z - 0.0f, p.w - 0.0f };
+
+           Model::SetLightPosition(margin);*/
+    }
+
+    if (Input::IsKey(DIK_UP))
+    {
+        /* XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+           XMFLOAT4 margin{ p.x - 0.0f, p.y + 0.1f, p.z - 0.0f, p.w - 0.0f };
+
+           Model::SetLightPosition(margin);*/
+    }
+
+    if (Input::IsKey(DIK_DOWN))
+    {
+        /* XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+           XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.1f, p.z - 0.0f, p.w - 0.0f };
+
+           Model::SetLightPosition(margin);*/
+    }
+
+    if (Input::IsKey(DIK_W))
+    {
+  /*      XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z + 0.1f, p.w + 0.0f };
+
+        Model::SetLightPosition(margin);*/
+
+        light.position_.z += 0.1f;
+    }
+
+    if (Input::IsKey(DIK_S))
+    {
+        /*      XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+      XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z - 0.1f, p.w + 0.0f };
+
+      Model::SetLightPosition(margin);*/
+        light.position_.z -= 0.1f;
+    }
+
+    if (Input::IsKey(DIK_A))
+    {
+        light.position_.x -= 0.1f;
+    }
+
+    if (Input::IsKey(DIK_D))
+    {
+        light.position_.x += 0.1f;
+    }
+
+    /*XMFLOAT4 tmp{ Model::GetModel(hLight_)->GetLightPos() };
+    light.position_ = { tmp.x, tmp.y, tmp.z };*/
 }
 
 //描画
@@ -83,8 +146,8 @@ void Stage::Draw()
    Model::SetTransform(hArrowZ_, arrowZ);
    Model::Draw(hArrowZ_);
 
-   Model::SetTransform(hWall_,wall);
-   Model::Draw(hWall_);
+   Model::SetTransform(hLight_,light);
+   Model::Draw(hLight_);
 }
 
 //開放

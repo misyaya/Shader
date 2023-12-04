@@ -250,10 +250,11 @@ void Fbx::Draw(Transform& transform)
 		CONSTANT_BUFFER cb;
 		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
+		cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
 		cb.diffuseColor = pMaterialList_[i].diffuse;
-		cb.isTexture = pMaterialList_[i].pTexture_ != nullptr;
-		cb.lightDirection = LIGHT_DIERECTION;
+		cb.lightPosition = LIGHT_DIERECTION;
 		XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
+		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
 		
 
 		
@@ -289,6 +290,10 @@ void Fbx::Draw(Transform& transform)
 		//描画
 		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
 	}
+}
+
+void Fbx::SetLightPos(XMFLOAT4& pos)
+{
 }
 
 void Fbx::Release()
