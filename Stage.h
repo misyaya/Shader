@@ -17,6 +17,11 @@ class Stage : public GameObject
     Transform arrowY;
     Transform arrowZ;
     Transform light;
+
+    struct CBUFF_STAGESCENE
+    {
+        XMFLOAT4 lightPosition;
+    };
 public:
     //コンストラクタ
     Stage(GameObject* parent);

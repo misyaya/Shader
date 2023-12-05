@@ -66,66 +66,61 @@ void Stage::Update()
 {
     if (Input::IsKey(DIK_RIGHT))
     {
-   /* XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
-      XMFLOAT4 margin{ p.x + 0.1f, p.y + 0.0f, p.z + 0.0f, p.w + 0.0f };
+         XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+         XMFLOAT4 margin{ p.x + 0.1f, p.y + 0.0f, p.z + 0.0f, p.w + 0.0f };
 
-      Model::SetLightPosition(margin);*/
+         Model::SetLightPosition(margin);
     }
     if (Input::IsKey(DIK_LEFT))
     {
-        /* XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
-           XMFLOAT4 margin{ p.x - 0.1f, p.y  0.0f, p.z - 0.0f, p.w - 0.0f };
+         XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+         XMFLOAT4 margin{ p.x - 0.1f, p.y  - 0.0f, p.z - 0.0f, p.w - 0.0f };
 
-           Model::SetLightPosition(margin);*/
+         Model::SetLightPosition(margin);
     }
 
     if (Input::IsKey(DIK_UP))
     {
-        /* XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
-           XMFLOAT4 margin{ p.x - 0.0f, p.y + 0.1f, p.z - 0.0f, p.w - 0.0f };
+         XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+         XMFLOAT4 margin{ p.x - 0.0f, p.y + 0.1f, p.z - 0.0f, p.w - 0.0f };
 
-           Model::SetLightPosition(margin);*/
+         Model::SetLightPosition(margin);
     }
 
     if (Input::IsKey(DIK_DOWN))
     {
-        /* XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
-           XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.1f, p.z - 0.0f, p.w - 0.0f };
+         XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+         XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.1f, p.z - 0.0f, p.w - 0.0f };
 
-           Model::SetLightPosition(margin);*/
+         Model::SetLightPosition(margin);
     }
 
     if (Input::IsKey(DIK_W))
     {
-  /*      XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
-        XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z + 0.1f, p.w + 0.0f };
+         XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+         XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z + 0.1f, p.w + 0.0f };
 
-        Model::SetLightPosition(margin);*/
+         Model::SetLightPosition(margin);
 
-        light.position_.z += 0.1f;
+         light.position_.z += 0.1f;
     }
 
     if (Input::IsKey(DIK_S))
     {
-        /*      XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
-      XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z - 0.1f, p.w + 0.0f };
+         XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+         XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z - 0.1f, p.w + 0.0f };
 
-      Model::SetLightPosition(margin);*/
-        light.position_.z -= 0.1f;
+         Model::SetLightPosition(margin);
+         light.position_.z -= 0.1f;
     }
 
-    if (Input::IsKey(DIK_A))
-    {
-        light.position_.x -= 0.1f;
-    }
+    XMFLOAT4 tmp{ Model::GetModel(hLight_)->GetLightPos() };
+    light.position_ = { tmp.x, tmp.y, tmp.z };
+ 
+    CBUFF_STAGESCENE cb;
+   // cb.lightPosition = lightSourcePosition_;
 
-    if (Input::IsKey(DIK_D))
-    {
-        light.position_.x += 0.1f;
-    }
-
-    /*XMFLOAT4 tmp{ Model::GetModel(hLight_)->GetLightPos() };
-    light.position_ = { tmp.x, tmp.y, tmp.z };*/
+    //Direct3D::pContext_->
 }
 
 //•`‰æ

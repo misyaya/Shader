@@ -294,6 +294,7 @@ void Fbx::Draw(Transform& transform)
 
 void Fbx::SetLightPos(XMFLOAT4& pos)
 {
+	lightSourcePosition_ = pos;
 }
 
 void Fbx::Release()

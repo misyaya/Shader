@@ -27,6 +27,8 @@ struct VS_OUT
 	float4 pos    : SV_POSITION;	//位置
 	float2 uv     : TEXCOORD;		//UV座標
 	float4 color	: COLOR;	//色（明るさ）
+	float4 eyev     :POSITION;
+	float4 normal   :NORMAL;
 };
 
 //───────────────────────────────────────
@@ -49,8 +51,8 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 	float light = normalize(lightPosition);
 	light = normalize(light);
 
-	OutData.color = saturate(dot(normal, light));
-	float posw = mul(pos.matW);
+	outData.color = saturate(dot(normal, light));
+	float posw = mul(pos, matW);
 	outData.eyev = eyePosition - posw;
 
 	////ピクセルシェーダーへ渡す情報
@@ -82,7 +84,9 @@ float4 PS(VS_OUT inData) : SV_Target
 	float4 ambientSource = float4(0.5, 0.5, 0.5, 1.0);
 	float4 diffuse;
 	float4 ambient;
-	float4 specular;
+	float4 NL = saturate(dot(inData.normal, normalize(lightPosition))); //saturate　1～0で区切る
+	float reflect = normalize(2 * NL * inData.normal - normalize(lightPosition));
+	float4 specular = pow(saturate(dot(reflect,normalize(inData.eyev))),8);
 
 	if (isTextured == false)
 	{
@@ -94,7 +98,8 @@ float4 PS(VS_OUT inData) : SV_Target
 		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * inData.color;
 		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientSource;
 	}
-	return (diffuse + ambient);
+	return diffuse + ambient + specular;
+	//return (diffuse + ambient);
 
 	//specular = pow(saturate(dot(diffues,ambient),))
 
