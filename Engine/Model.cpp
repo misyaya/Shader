@@ -60,6 +60,8 @@ void Model::SetTransform(int hModel, Transform transform)
 
 void Model::SetLightPosition(XMFLOAT4 _lightpos)
 {
+	Fbx*  set = new Fbx();
+	set->SetLightPos(_lightpos);
 }
 
 Fbx* Model::GetModel(int _hModel)

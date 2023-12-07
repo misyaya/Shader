@@ -64,6 +64,8 @@ void Stage::Initialize()
 //XV
 void Stage::Update()
 {
+    Model::GetModel(hLight_)->SetLightPos(lightSourcePosition_);
+
     if (Input::IsKey(DIK_RIGHT))
     {
          XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
@@ -117,8 +119,9 @@ void Stage::Update()
     XMFLOAT4 tmp{ Model::GetModel(hLight_)->GetLightPos() };
     light.position_ = { tmp.x, tmp.y, tmp.z };
  
+    
     CBUFF_STAGESCENE cb;
-   // cb.lightPosition = lightSourcePosition_;
+    cb.lightPosition = lightSourcePosition_;
 
     //Direct3D::pContext_->
 }
