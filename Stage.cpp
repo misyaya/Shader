@@ -30,7 +30,8 @@ void Stage::IntConstantBuffer()
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage"), hDonuts_(-1),lightSourcePosition_()
+    :GameObject(parent, "Stage"),
+    hArrowX_(-1), hArrowY_(-1), hArrowZ_(-1), hDonuts_(-1), hLight_(-1), lightSourcePosition_()
 {
 }
 
@@ -57,6 +58,25 @@ void Stage::Initialize()
     hDonuts_ = Model::Load("Assets/donuts.fbx");
     assert(hDonuts_ >= 0);
 
+    hLight_ = Model::Load("Assets/light.fbx");
+    assert(hLight_ >= 0);
+
+    arrowX.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
+    arrowX.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
+
+    arrowY.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
+    arrowY.rotate_.z = 90.0f;
+    arrowY.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
+
+    arrowZ.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
+    arrowZ.rotate_.y = 270.0f;
+    arrowZ.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
+
+
+
+    Camera::SetPosition(XMVECTOR{ 0, 10, -20, 0 });
+    Camera::SetTarget(XMVECTOR{ 0, 2, 0, 0 });
+
     IntConstantBuffer();
 }
 
@@ -67,55 +87,54 @@ void Stage::Update()
 
     if (Input::IsKey(DIK_RIGHT))
     {
-        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 p = GetLightPos();
         XMFLOAT4 margin{ p.x + 0.1f, p.y + 0.0f, p.z + 0.0f, p.w + 0.0f };
 
-        Model::SetLightPosition(margin);
+        SetLightPos(margin);
     }
+
     if (Input::IsKey(DIK_LEFT))
     {
-        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 p = GetLightPos();
         XMFLOAT4 margin{ p.x - 0.1f, p.y - 0.0f, p.z - 0.0f, p.w - 0.0f };
 
-        Model::SetLightPosition(margin);
+        SetLightPos(margin);
     }
 
     if (Input::IsKey(DIK_UP))
     {
-        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 p = GetLightPos();
         XMFLOAT4 margin{ p.x - 0.0f, p.y + 0.1f, p.z - 0.0f, p.w - 0.0f };
 
-        Model::SetLightPosition(margin);
+       SetLightPos(margin);
     }
 
     if (Input::IsKey(DIK_DOWN))
     {
-        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 p = GetLightPos();
         XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.1f, p.z - 0.0f, p.w - 0.0f };
 
-        Model::SetLightPosition(margin);
+        SetLightPos(margin);
     }
 
     if (Input::IsKey(DIK_W))
     {
-        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 p = GetLightPos();
         XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z + 0.1f, p.w + 0.0f };
 
-        Model::SetLightPosition(margin);
-
-        light.position_.z += 0.1f;
+        SetLightPos(margin);
     }
 
     if (Input::IsKey(DIK_S))
     {
-        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
-        XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z - 0.1f, p.w + 0.0f };
+        XMFLOAT4 p = GetLightPos();
+        XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z - 0.1f, p.w - 0.0f };
 
-        Model::SetLightPosition(margin);
-        light.position_.z -= 0.1f;
+        SetLightPos(margin);
     }
 
-    XMFLOAT4 tmp{ Model::GetModel(hLight_)->GetLightPos() };
+
+    XMFLOAT4 tmp{ GetLightPos() };
     light.position_ = { tmp.x, tmp.y, tmp.z };
 
     CBUFF_STAGESCENE cb;
@@ -126,13 +145,27 @@ void Stage::Update()
 
     Direct3D::pContext_->VSSetConstantBuffers(1, 1, &pCBStageScene_); //頂点シェーダー用
     Direct3D::pContext_->PSSetConstantBuffers(1, 1, &pCBStageScene_); //ピクセルシェーダー用
+
+    
 }
 
 //描画
 void Stage::Draw()
 {
+   Model::SetTransform(hArrowX_, arrowX);
+   Model::Draw(hArrowX_);
+
+   Model::SetTransform(hArrowY_, arrowY);
+   Model::Draw(hArrowY_);
+
+   Model::SetTransform(hArrowZ_, arrowZ);
+   Model::Draw(hArrowZ_);
+
    Model::SetTransform(hDonuts_, transform_);
    Model::Draw(hDonuts_);
+
+   Model::SetTransform(hLight_, light);
+   Model::Draw(hLight_);
 }
 
 //開放

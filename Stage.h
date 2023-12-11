@@ -18,8 +18,11 @@ class Stage : public GameObject
     int hArrowZ_;
     int hDonuts_;
     int hLight_;
-
   
+
+    Transform arrowX;
+    Transform arrowY;
+    Transform arrowZ;
     Transform light;
 
     ID3D11Buffer* pCBStageScene_;

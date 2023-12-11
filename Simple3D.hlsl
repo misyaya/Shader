@@ -31,9 +31,9 @@ struct VS_OUT
 	float4 pos    : SV_POSITION;	//位置
 	float2 uv     : TEXCOORD;		//UV座標
 	float4 color  : COLOR;	//色（明るさ）
-	float4 eyev   : TEXCOORD2;
+	float4 eyev   : POSITION;
 	float4 normal : NORMAL;
-	
+
 };
 
 //───────────────────────────────────────
@@ -42,19 +42,27 @@ struct VS_OUT
 VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 {
 	//ピクセルシェーダーへ渡す情報
-	VS_OUT outData;
+	VS_OUT outData = (VS_OUT)0;
 
 	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
 	//スクリーン座標に変換し、ピクセルシェーダーへ
 	outData.pos = mul(pos, matWVP);
 	outData.uv = uv;
 
+	normal.w = 0;
+
 	//法線を回転
 	normal = mul(normal, matW);
+	normal = normalize(normal);
+	outData.normal = normal;
 
-	float4 light = float4(-1, 0.5, -0.7, 0);
+	float4 light = normalize(lightPosition);
 	light = normalize(light);
-	outData.color = clamp(dot(normal, light), 0, 1);
+	outData.color = saturate(dot(normal, light));
+	float4 posw = mul(pos, matW);
+	outData.eyev = eyePosition - posw;
+
+	//outData.color = clamp(dot(normal, light), 0, 1);
 
 
 	//まとめて出力
@@ -67,7 +75,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 float4 PS(VS_OUT inData) : SV_Target
 {
 	float4 lightSource = float4(1.0, 1.0, 1.0, 0.0); //RGB
-	float4 ambientSource = float4(0.5, 0.5, 0.5, 1.0);
+	float4 ambientSource = float4(0.2, 0.2, 0.2, 1.0);
 	float4 diffuse;
 	float4 ambient;
 	float4 NL = saturate(dot(inData.normal, normalize(lightPosition)));
@@ -86,18 +94,19 @@ float4 PS(VS_OUT inData) : SV_Target
 	}
 	return (diffuse + ambient + specular);
 
+
 	//specular = pow(saturate(dot(diffues,ambient),))
 
-	
+
 	//float4 output = g_texture.Sample(g_sampler, inData.uv);
-	float4 output = g_texture.Sample(g_sampler, inData.uv);
+	//float4 output = g_texture.Sample(g_sampler, inData.uv);
 
 	//グレースケール変換
-	float grayValue = dot(output.rgb, float3(0.298912, 0.586611, 0.114478));
-	float4 grayColor = float4(grayValue, grayValue, grayValue, output.a);
+	//float grayValue = dot(output.rgb, float3(0.298912, 0.586611, 0.114478));
+	//float4 grayColor = float4(grayValue, grayValue, grayValue, output.a);
 
 	//float4 output = floor(g_texture.Sample(g_sampler, inData.uv)*8.0)/8;
-	
+
 
 	//return grayColor;
 

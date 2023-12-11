@@ -1,19 +1,11 @@
 #include "Model.h"
+#include "Direct3D.h"
 
 namespace Model
 {
-	//モデル情報
-	struct ModelData
-	{
-		//FBX名
-		Fbx* pfbx_;
-		Transform transform_; //トランスフォーム
-		std::string filename_; //ファイル名
-	};
 	//モデルのポインタをぶち込んでおくベクタ
 	std::vector<ModelData*>modelList;
-
-
+	//RENDER_STATE state_;
 };
 
 int Model::Load(std::string fileName)
@@ -58,12 +50,6 @@ void Model::SetTransform(int hModel, Transform transform)
 	//モデル番号は、modelListのインデクッス
 }
 
-void Model::SetLightPosition(XMFLOAT4 _lightpos)
-{
-	Fbx* set = new Fbx();
-	set->SetLightPos(_lightpos);
-}
-
 Fbx* Model::GetModel(int _hModel)
 {
 	return modelList[_hModel]->pfbx_;
@@ -96,4 +82,9 @@ void Model::Release()
 		SAFE_DELETE(modelList[i]);
 	}
 	modelList.clear();
+}
+
+void Model::ToggleRenderState()
+{
+	//int n = (int)(Model::state_);
 }
