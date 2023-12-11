@@ -1,9 +1,36 @@
 #include "Stage.h"
 #include "Engine/Model.h"
+#include "Engine/Camera.h"
+#include "Engine/Input.h"
+
+namespace {
+    const XMFLOAT4 DEF_LIGHTPOSITION{ 1, 2, 1, 0 };
+}
+
+void Stage::IntConstantBuffer()
+{
+    D3D11_BUFFER_DESC cb;
+    cb.ByteWidth = sizeof(CBUFF_STAGESCENE);
+    cb.Usage = D3D11_USAGE_DEFAULT;
+    cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cb.CPUAccessFlags = 0;
+    cb.MiscFlags = 0;
+    cb.StructureByteStride = 0;
+
+    //コンスタントバッファの作成
+    HRESULT hr;
+    hr = Direct3D::pDevice_->CreateBuffer(&cb, nullptr, &pCBStageScene_);
+    if (FAILED(hr))
+    {
+        MessageBox(NULL, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
+    }
+
+ 
+}
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
-    :GameObject(parent, "Stage"), hGround_(-1), hBall_(-1), hArrowX_(-1),hWall_(-1)
+    :GameObject(parent, "Stage"), hDonuts_(-1),lightSourcePosition_()
 {
 }
 
@@ -15,14 +42,6 @@ Stage::~Stage()
 //初期化
 void Stage::Initialize()
 {
-    // 床
-    hGround_ = Model::Load("Assets/ground.fbx");
-    assert(hGround_ >= 0);
-
-    // ボール
-    hBall_ = Model::Load("Assets/ball.fbx");
-    assert(hBall_ >= 0);
-
     // Xアロー
     hArrowX_ = Model::Load("Assets/arrow.fbx");
     assert(hArrowX_ >= 0);
@@ -35,56 +54,85 @@ void Stage::Initialize()
     hArrowZ_ = Model::Load("Assets/arrow.fbx");
     assert(hArrowZ_ >= 0);
 
-    // 
-    hWall_ = Model::Load("Assets/wall3.fbx");
-    assert(hWall_ >= 0);
+    hDonuts_ = Model::Load("Assets/donuts.fbx");
+    assert(hDonuts_ >= 0);
 
-    ground.scale_ = XMFLOAT3(5.0f,5.0f,5.0f);
-
-    //ball.position_ = XMFLOAT3(2.0f, 0.5f, 0.5f);
-    ball.position_ = XMFLOAT3(2.0f, 0.5f, 0.5f);
-
-
-    arrowX.scale_ = XMFLOAT3(0.2f,0.2f,0.2f);
-    arrowX.position_ = XMFLOAT3(0.0f,0.5f,-1.0f);
-
-    arrowY.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
-    arrowY.rotate_.z = 90.0f;
-    arrowY.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
-    
-    arrowZ.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
-    arrowZ.rotate_.y = 270.0f;
-    arrowZ.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
-
-    wall.position_ = XMFLOAT3(0.0f, 1.5f, 0.0f);
+    IntConstantBuffer();
 }
 
 //更新
 void Stage::Update()
 {
-    wall.rotate_.y += 0.5f;
+    Model::GetModel(hLight_)->SetLightPos(lightSourcePosition_);
+
+    if (Input::IsKey(DIK_RIGHT))
+    {
+        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 margin{ p.x + 0.1f, p.y + 0.0f, p.z + 0.0f, p.w + 0.0f };
+
+        Model::SetLightPosition(margin);
+    }
+    if (Input::IsKey(DIK_LEFT))
+    {
+        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 margin{ p.x - 0.1f, p.y - 0.0f, p.z - 0.0f, p.w - 0.0f };
+
+        Model::SetLightPosition(margin);
+    }
+
+    if (Input::IsKey(DIK_UP))
+    {
+        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 margin{ p.x - 0.0f, p.y + 0.1f, p.z - 0.0f, p.w - 0.0f };
+
+        Model::SetLightPosition(margin);
+    }
+
+    if (Input::IsKey(DIK_DOWN))
+    {
+        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.1f, p.z - 0.0f, p.w - 0.0f };
+
+        Model::SetLightPosition(margin);
+    }
+
+    if (Input::IsKey(DIK_W))
+    {
+        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z + 0.1f, p.w + 0.0f };
+
+        Model::SetLightPosition(margin);
+
+        light.position_.z += 0.1f;
+    }
+
+    if (Input::IsKey(DIK_S))
+    {
+        XMFLOAT4 p = Model::GetModel(hLight_)->GetLightPos();
+        XMFLOAT4 margin{ p.x - 0.0f, p.y - 0.0f, p.z - 0.1f, p.w + 0.0f };
+
+        Model::SetLightPosition(margin);
+        light.position_.z -= 0.1f;
+    }
+
+    XMFLOAT4 tmp{ Model::GetModel(hLight_)->GetLightPos() };
+    light.position_ = { tmp.x, tmp.y, tmp.z };
+
+    CBUFF_STAGESCENE cb;
+    cb.lightPosition = lightSourcePosition_;
+    XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
+    
+    Direct3D::pContext_->UpdateSubresource(pCBStageScene_, 0, NULL, &cb, 0, 0);
+
+    Direct3D::pContext_->VSSetConstantBuffers(1, 1, &pCBStageScene_); //頂点シェーダー用
+    Direct3D::pContext_->PSSetConstantBuffers(1, 1, &pCBStageScene_); //ピクセルシェーダー用
 }
 
 //描画
 void Stage::Draw()
 {
-   Model::SetTransform(hGround_, ground);
-   Model::Draw(hGround_);
-
-   Model::SetTransform(hBall_, ball);
-   Model::Draw(hBall_);
-
-   Model::SetTransform(hArrowX_, arrowX);
-   Model::Draw(hArrowX_);
-
-   Model::SetTransform(hArrowY_, arrowY);
-   Model::Draw(hArrowY_);
-
-   Model::SetTransform(hArrowZ_, arrowZ);
-   Model::Draw(hArrowZ_);
-
-   Model::SetTransform(hWall_,wall);
-   Model::Draw(hWall_);
+   Model::SetTransform(hDonuts_, transform_);
+   Model::Draw(hDonuts_);
 }
 
 //開放

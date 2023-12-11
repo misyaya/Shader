@@ -12,6 +12,8 @@ namespace Model
 	//“Ç‚İ‚İ
 	int Load(std::string fileName);
 	void SetTransform(int hModel, Transform transform);
+	void SetLightPosition(XMFLOAT4 _lightpos);
+	Fbx* GetModel(int _hModel);
 	//•`‰æ
 	void Draw(int hModel);
 	//‰ğ•ú
