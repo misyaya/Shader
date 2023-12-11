@@ -19,7 +19,7 @@ class Fbx
 	//マテリアル
 	struct MATERIAL
 	{
-		Texture*    pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
+		Texture* pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
 		XMFLOAT4	diffuse;
 	};
 
@@ -29,11 +29,7 @@ class Fbx
 		XMMATRIX    matW; //w ワールド変換のみ
 		XMMATRIX	matNormal; //スケール×平行移動の逆行列
 		XMFLOAT4	diffuseColor;		// ディフューズカラー（マテリアルの色）
-		XMFLOAT4	lightPosition; //光源方向
-		XMFLOAT4	eyePos; //視点
 		BOOL		isTextured;		// テクスチャ貼ってあるかどうか
-	
-		
 	};
 
 	struct VERTEX
@@ -66,8 +62,8 @@ public:
 
 	Fbx();
 	HRESULT Load(std::string fileName);
-	void Draw(Transform& transform);
 	void SetLightPos(XMFLOAT4& pos);
 	XMFLOAT4 GetLightPos() { return (lightSourcePosition_); }
+	void Draw(Transform& transform);
 	void Release();
 };
