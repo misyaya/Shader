@@ -21,7 +21,7 @@ class Fbx
 	{
 		Texture*    pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
 		XMFLOAT4	diffuse;
-		XMFLOAT4    ambient;
+	//	XMFLOAT4    ambient;
 	};
 
 	//ambient specular shinessも追加する

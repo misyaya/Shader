@@ -201,20 +201,22 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 	for (int i = 0; i < materialCount_; i++)
 	{
-		//i番目のマテリアル情報を取得
-		FbxSurfacePhong* pMaterial = (FbxSurfacePhong *)(pNode->GetMaterial(i));
-		FbxDouble3 diffuse = pMaterial->Diffuse;
-		//diffuse[0],diffuse[1],diffuse[2]
-		FbxDouble3 ambient = pMaterial->Ambient;
-		
-		if (pMaterial->GetClassId().Is(FbxSurfacePhong::ClassId))
-		{
-			FbxDouble3 specular = pMaterial->Specular;
-			FbxDouble shiness = pMaterial->Shininess;
-		}
+		FbxSurfaceMaterial* pMaterial = pNode->GetMaterial(i);
 
-		pMaterialList_[i].diffuse = XMFLOAT4{ (float)diffuse[0],diffuse[1],diffuse[2],1.0 };
-		pMaterialList_[i].ambient = XMFLOAT4{ (float)diffuse[0],diffuse[1],diffuse[2],1.0 };
+		//i番目のマテリアル情報を取得
+		//FbxSurfacePhong* pMaterial = (FbxSurfacePhong *)(pNode->GetMaterial(i));
+		//FbxDouble3 diffuse = pMaterial->Diffuse;
+		////diffuse[0],diffuse[1],diffuse[2]
+		//FbxDouble3 ambient = pMaterial->Ambient;
+		//
+		//if (pMaterial->GetClassId().Is(FbxSurfacePhong::ClassId))
+		//{
+		//	FbxDouble3 specular = pMaterial->Specular;
+		//	FbxDouble shiness = pMaterial->Shininess;
+		//}
+
+		//pMaterialList_[i].diffuse = XMFLOAT4{ (float)diffuse[0],diffuse[1],diffuse[2],1.0 };
+		//pMaterialList_[i].ambient = XMFLOAT4{ (float)diffuse[0],diffuse[1],diffuse[2],1.0 };
 
 		//テクスチャ情報
 		FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse);
