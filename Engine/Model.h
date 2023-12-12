@@ -5,30 +5,30 @@
 
 
 //-----------------------------------------------------------
-//3Dƒ‚ƒfƒ‹iFBXƒtƒ@ƒCƒ‹j‚ğŠÇ—‚·‚é
+//3Dãƒ¢ãƒ‡ãƒ«ï¼ˆFBXãƒ•ã‚¡ã‚¤ãƒ«ï¼‰ã‚’ç®¡ç†ã™ã‚‹
 //-----------------------------------------------------------
 namespace Model
 {
-	//ƒ‚ƒfƒ‹î•ñ
+	//ãƒ¢ãƒ‡ãƒ«æƒ…å ±
 	struct ModelData
 	{
-		//FBX–¼
+		//FBXå
 		Fbx* pfbx_;
-		Transform transform_; //ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
-		std::string filename_; //ƒtƒ@ƒCƒ‹–¼
+		Transform transform_; //ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
+		std::string filename_; //ãƒ•ã‚¡ã‚¤ãƒ«å
 	};
-	
 
-	//“Ç‚İ‚İ
+
+	//èª­ã¿è¾¼ã¿
 	int Load(std::string fileName);
 	void SetTransform(int hModel, Transform transform);
 	Fbx* GetModel(int _hModel);
-	//•`‰æ
+	//æç”»
 	void Draw(int hModel);
-	//‰ğ•ú
+	//è§£æ”¾
 	void Release();
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOó‘Ô‚ÌØ‚è‘Ö‚¦
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°çŠ¶æ…‹ã®åˆ‡ã‚Šæ›¿ãˆ
 	void ToggleRenderState();
 
 };

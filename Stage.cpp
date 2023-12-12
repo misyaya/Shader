@@ -17,41 +17,40 @@ void Stage::IntConstantBuffer()
     cb.MiscFlags = 0;
     cb.StructureByteStride = 0;
 
-    //ÉRÉìÉXÉ^ÉìÉgÉoÉbÉtÉ@ÇÃçÏê¨
+    //„Ç≥„É≥„Çπ„Çø„É≥„Éà„Éê„ÉÉ„Éï„Ç°„ÅÆ‰ΩúÊàê
     HRESULT hr;
     hr = Direct3D::pDevice_->CreateBuffer(&cb, nullptr, &pCBStageScene_);
     if (FAILED(hr))
     {
-        MessageBox(NULL, "ÉRÉìÉXÉ^ÉìÉgÉoÉbÉtÉ@ÇÃçÏê¨Ç…é∏îsÇµÇ‹ÇµÇΩ", "ÉGÉâÅ[", MB_OK);
+        MessageBox(NULL, "„Ç≥„É≥„Çπ„Çø„É≥„Éà„Éê„ÉÉ„Éï„Ç°„ÅÆ‰ΩúÊàê„Å´Â§±Êïó„Åó„Åæ„Åó„Åü", "„Ç®„É©„Éº", MB_OK);
     }
 
- 
 }
 
-//ÉRÉìÉXÉgÉâÉNÉ^
+//„Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
 Stage::Stage(GameObject* parent)
     :GameObject(parent, "Stage"),
     hArrowX_(-1), hArrowY_(-1), hArrowZ_(-1), hDonuts_(-1), hLight_(-1), lightSourcePosition_()
 {
 }
 
-//ÉfÉXÉgÉâÉNÉ^
+//„Éá„Çπ„Éà„É©„ÇØ„Çø
 Stage::~Stage()
 {
 }
 
-//èâä˙âª
+//ÂàùÊúüÂåñ
 void Stage::Initialize()
 {
-    // XÉAÉçÅ[
+    // X„Ç¢„É≠„Éº
     hArrowX_ = Model::Load("Assets/arrow.fbx");
     assert(hArrowX_ >= 0);
 
-    // YÉAÉçÅ[
+    // Y„Ç¢„É≠„Éº
     hArrowY_ = Model::Load("Assets/arrow.fbx");
     assert(hArrowY_ >= 0);
 
-    // XÉAÉçÅ[
+    // X„Ç¢„É≠„Éº
     hArrowZ_ = Model::Load("Assets/arrow.fbx");
     assert(hArrowZ_ >= 0);
 
@@ -80,7 +79,7 @@ void Stage::Initialize()
     IntConstantBuffer();
 }
 
-//çXêV
+//Êõ¥Êñ∞
 void Stage::Update()
 {
     Model::GetModel(hLight_)->SetLightPos(lightSourcePosition_);
@@ -107,6 +106,7 @@ void Stage::Update()
         XMFLOAT4 margin{ p.x - 0.0f, p.y + 0.1f, p.z - 0.0f, p.w - 0.0f };
 
        SetLightPos(margin);
+
     }
 
     if (Input::IsKey(DIK_DOWN))
@@ -140,35 +140,40 @@ void Stage::Update()
     CBUFF_STAGESCENE cb;
     cb.lightPosition = lightSourcePosition_;
     XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
-    
+
     Direct3D::pContext_->UpdateSubresource(pCBStageScene_, 0, NULL, &cb, 0, 0);
 
-    Direct3D::pContext_->VSSetConstantBuffers(1, 1, &pCBStageScene_); //í∏ì_ÉVÉFÅ[É_Å[óp
-    Direct3D::pContext_->PSSetConstantBuffers(1, 1, &pCBStageScene_); //ÉsÉNÉZÉãÉVÉFÅ[É_Å[óp
+    Direct3D::pContext_->VSSetConstantBuffers(1, 1, &pCBStageScene_); //È†ÇÁÇπ„Ç∑„Çß„Éº„ÉÄ„ÉºÁî®
+    Direct3D::pContext_->PSSetConstantBuffers(1, 1, &pCBStageScene_); //„Éî„ÇØ„Çª„É´„Ç∑„Çß„Éº„ÉÄ„ÉºÁî®
 
-    
+
 }
 
-//ï`âÊ
+//ÊèèÁîª
 void Stage::Draw()
 {
-   Model::SetTransform(hArrowX_, arrowX);
-   Model::Draw(hArrowX_);
+    Model::SetTransform(hArrowX_, arrowX);
+    Model::Draw(hArrowX_);
 
-   Model::SetTransform(hArrowY_, arrowY);
-   Model::Draw(hArrowY_);
+    Model::SetTransform(hArrowY_, arrowY);
+    Model::Draw(hArrowY_);
 
-   Model::SetTransform(hArrowZ_, arrowZ);
-   Model::Draw(hArrowZ_);
+
+    Model::SetTransform(hArrowZ_, arrowZ);
+    Model::Draw(hArrowZ_);
+
+    Model::SetTransform(hDonuts_, transform_);
+    Model::Draw(hDonuts_);
 
    Model::SetTransform(hDonuts_, transform_);
    Model::Draw(hDonuts_);
 
    Model::SetTransform(hLight_, light);
    Model::Draw(hLight_);
+
 }
 
-//äJï˙
+//ÈñãÊîæ
 void Stage::Release()
 {
 }

@@ -1,12 +1,12 @@
-﻿#include "Fbx.h"
+#include "Fbx.h"
 #include "Camera.h"
 #include "Texture.h"
 #include <assert.h>
 
-const XMFLOAT4 LIGHT_DIERECTION = {-1,-5,-5,-1};
+const XMFLOAT4 LIGHT_DIERECTION = { -1,-5,-5,-1 };
 
-Fbx::Fbx():
-	vertexCount_(0),polygonCount_(0),materialCount_(0),pVertexBuffer_(nullptr),pIndexBuffer_(0),pConstantBuffer_(nullptr),pMaterialList_(nullptr)
+Fbx::Fbx() :
+	vertexCount_(0), polygonCount_(0), materialCount_(0), pVertexBuffer_(nullptr), pIndexBuffer_(0), pConstantBuffer_(nullptr), pMaterialList_(nullptr)
 {
 }
 
@@ -81,7 +81,7 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 			//頂点の位置
 			FbxVector4 pos = mesh->GetControlPointAt(index);
 			vertices[index].position = XMVectorSet((float)pos[0], (float)pos[1], (float)pos[2], 0.0f);
-		
+
 			//頂点のUV
 			FbxLayerElementUV* pUV = mesh->GetLayer(0)->GetUVs();
 			int uvIndex = mesh->GetTextureUVIndex(poly, vertex, FbxLayerElement::eTextureDiffuse);
@@ -97,7 +97,7 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 		}
 	}
 
-	
+
 	// 頂点バッファ
 	D3D11_BUFFER_DESC bd_vertex;
 	bd_vertex.ByteWidth = sizeof(VERTEX) * vertexCount_;
@@ -223,7 +223,7 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 			//ファイルからテクスチャ作成
 			pMaterialList_[i].pTexture_ = new Texture;
-			HRESULT hr =pMaterialList_[i].pTexture_->Load(name);
+			HRESULT hr = pMaterialList_[i].pTexture_->Load(name);
 			assert(hr == S_OK);
 		}
 		//テクスチャ無し
@@ -247,7 +247,7 @@ void Fbx::Draw(Transform& transform)
 	Direct3D::SetShader(SHADER_3D);
 
 	transform.Calclation();
-	
+
 
 
 	for (int i = 0; i < materialCount_; i++)
@@ -261,8 +261,6 @@ void Fbx::Draw(Transform& transform)
 		//XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
 		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
 		
-
-		
 		
 		//D3D11_MAPPED_SUBRESOURCE pdata;
 		//Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
@@ -270,6 +268,7 @@ void Fbx::Draw(Transform& transform)
 		//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
 
 		Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0,NULL,&cb,0,0);
+
 
 		//頂点バッファ
 		UINT stride = sizeof(VERTEX);
@@ -284,7 +283,7 @@ void Fbx::Draw(Transform& transform)
 		//コンスタントバッファ
 		Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
 		Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
-	
+
 		if (pMaterialList_[i].pTexture_)
 		{
 			ID3D11SamplerState* pSampler = pMaterialList_[i].pTexture_->GetSampler();

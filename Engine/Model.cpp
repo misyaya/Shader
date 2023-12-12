@@ -26,7 +26,7 @@ int Model::Load(std::string fileName)
 		}
 	}
 
-	
+
 	if (pData->pfbx_ == nullptr)
 	{
 		pData->pfbx_ = new Fbx;

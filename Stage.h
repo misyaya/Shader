@@ -5,20 +5,19 @@ struct CBUFF_STAGESCENE
 {
     XMFLOAT4 lightPosition;
     XMFLOAT4 eyePos;
-    
+
 };
 
 
-//ŸŸŸ‚ğŠÇ—‚·‚éƒNƒ‰ƒX
+//â—†â—†â—†ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
 class Stage : public GameObject
 {
- 
     int hArrowX_;
     int hArrowY_;
     int hArrowZ_;
     int hDonuts_;
     int hLight_;
-  
+
 
     Transform arrowX;
     Transform arrowY;
@@ -30,22 +29,22 @@ class Stage : public GameObject
     void IntConstantBuffer();
     XMFLOAT4 lightSourcePosition_;
 public:
-    //ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+    //ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     Stage(GameObject* parent);
 
-    //ƒfƒXƒgƒ‰ƒNƒ^
+    //ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     ~Stage();
 
-    //‰Šú‰»
+    //åˆæœŸåŒ–
     void Initialize() override;
 
-    //XV
+    //æ›´æ–°
     void Update() override;
 
-    //•`‰æ
+    //æç”»
     void Draw() override;
 
-    //ŠJ•ú
+    //é–‹æ”¾
     void Release() override;
 
     void SetLightPos(XMFLOAT4& _pos) { lightSourcePosition_ = _pos; }

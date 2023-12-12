@@ -19,7 +19,7 @@ class Fbx
 	//マテリアル
 	struct MATERIAL
 	{
-		Texture*    pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
+		Texture* pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
 		XMFLOAT4	diffuse;
 	};
 
