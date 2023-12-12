@@ -42,23 +42,26 @@ Stage::~Stage()
 //初期化
 void Stage::Initialize()
 {
-    // Xアロー
+    //Xアロー
     hArrowX_ = Model::Load("Assets/arrow.fbx");
     assert(hArrowX_ >= 0);
 
-    // Yアロー
+    //Yアロー
     hArrowY_ = Model::Load("Assets/arrow.fbx");
     assert(hArrowY_ >= 0);
 
-    // Xアロー
+    //Xアロー
     hArrowZ_ = Model::Load("Assets/arrow.fbx");
     assert(hArrowZ_ >= 0);
 
+    //ドーナツ
     hDonuts_ = Model::Load("Assets/donuts.fbx");
     assert(hDonuts_ >= 0);
 
+    //ライトの誘導の玉
     hLight_ = Model::Load("Assets/light.fbx");
     assert(hLight_ >= 0);
+
 
     arrowX.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
     arrowX.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
@@ -157,7 +160,6 @@ void Stage::Draw()
 
     Model::SetTransform(hArrowY_, arrowY);
     Model::Draw(hArrowY_);
-
 
     Model::SetTransform(hArrowZ_, arrowZ);
     Model::Draw(hArrowZ_);

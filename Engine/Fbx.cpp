@@ -124,7 +124,7 @@ void Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 	indexCount_ = std::vector<int>(materialCount_);
 
 	//int* index = new int[polygonCount_ * 3];
-	std::vector<int> index(polygonCount_ * 3);
+	std::vector<int> index(polygonCount_ * 3);//ポリゴン数×3＝全頂点分
 
 	for (int i = 0; i < materialCount_; i++)
 	{
@@ -133,6 +133,7 @@ void Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 		//全ポリゴン
 		for (DWORD poly = 0; poly < polygonCount_; poly++)
 		{
+			//あるマテリアルを持ったポリゴンのリストをとってきて、頂点をリストアップ
 			FbxLayerElementMaterial* mtl = mesh->GetLayer(0)->GetMaterials();
 			int mtlId = mtl->GetIndexArray().GetAt(poly);
 
@@ -201,12 +202,24 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 	for (int i = 0; i < materialCount_; i++)
 	{
 		//i番目のマテリアル情報を取得
-		FbxSurfaceMaterial* pMaterial = pNode->GetMaterial(i);
+		FbxSurfacePhong* pMaterial = (FbxSurfacePhong *)(pNode->GetMaterial(i));
+		FbxDouble3 diffuse = pMaterial->Diffuse;
+		//diffuse[0],diffuse[1],diffuse[2]
+		FbxDouble3 ambient = pMaterial->Ambient;
+		
+		if (pMaterial->GetClassId().Is(FbxSurfacePhong::ClassId))
+		{
+			FbxDouble3 specular = pMaterial->Specular;
+			FbxDouble shiness = pMaterial->Shininess;
+		}
+
+		pMaterialList_[i].diffuse = XMFLOAT4{ (float)diffuse[0],diffuse[1],diffuse[2],1.0 };
+		pMaterialList_[i].ambient = XMFLOAT4{ (float)diffuse[0],diffuse[1],diffuse[2],1.0 };
 
 		//テクスチャ情報
 		FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse);
 
-		//テクスチャの数数
+		//テクスチャの数
 		int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
 
 		//テクスチャあり
@@ -280,7 +293,7 @@ void Fbx::Draw(Transform& transform)
 		offset = 0;
 		Direct3D::pContext_->IASetIndexBuffer(pIndexBuffer_[i], DXGI_FORMAT_R32_UINT, 0);
 
-		//コンスタントバッファ
+		//コンスタントバッファ　　0,1→バッファの番号
 		Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
 		Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
 

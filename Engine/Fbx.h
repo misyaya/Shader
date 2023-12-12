@@ -19,10 +19,12 @@ class Fbx
 	//マテリアル
 	struct MATERIAL
 	{
-		Texture* pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
+		Texture*    pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
 		XMFLOAT4	diffuse;
+		XMFLOAT4    ambient;
 	};
 
+	//ambient specular shinessも追加する
 	struct CONSTANT_BUFFER
 	{
 		XMMATRIX	matWVP;  //wvp ワールドビュープロジェクション

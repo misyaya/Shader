@@ -30,10 +30,9 @@ struct VS_OUT
 {
 	float4 pos    : SV_POSITION;	//位置
 	float2 uv     : TEXCOORD;		//UV座標
-	float4 color  : COLOR;	//色（明るさ）
-	float4 eyev   : POSITION;
+	float4 color  : COLOR;          //色（明るさ）
+	float4 eyev   : POSITION;       //視線ベクトル
 	float4 normal : NORMAL;
-
 };
 
 //───────────────────────────────────────
@@ -49,15 +48,15 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 	outData.pos = mul(pos, matWVP);
 	outData.uv = uv;
 
-	normal.w = 0;
-
 	//法線を回転
+	normal.w = 0;
 	normal = mul(normal, matW);
 	normal = normalize(normal);
 	outData.normal = normal;
 
 	float4 light = normalize(lightPosition);
 	light = normalize(light);
+
 	outData.color = saturate(dot(normal, light));
 	float4 posw = mul(pos, matW);
 	outData.eyev = eyePosition - posw;
@@ -93,6 +92,7 @@ float4 PS(VS_OUT inData) : SV_Target
 		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientSource;
 	}
 	return (diffuse + ambient + specular);
+	
 
 
 	//specular = pow(saturate(dot(diffues,ambient),))

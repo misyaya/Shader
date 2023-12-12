@@ -5,7 +5,6 @@ struct CBUFF_STAGESCENE
 {
     XMFLOAT4 lightPosition;
     XMFLOAT4 eyePos;
-
 };
 
 
@@ -26,7 +25,9 @@ class Stage : public GameObject
 
     ID3D11Buffer* pCBStageScene_;
 
+    //コンスタントバッファの初期化
     void IntConstantBuffer();
+
     XMFLOAT4 lightSourcePosition_;
 public:
     //コンストラクタ
