@@ -1,4 +1,4 @@
-﻿#include "Fbx.h"
+#include "Fbx.h"
 #include "Camera.h"
 #include "Texture.h"
 #include <assert.h>
@@ -260,16 +260,15 @@ void Fbx::Draw(Transform& transform)
 		//cb.lightPosition = LIGHT_DIERECTION;
 		//XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
 		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
-
-
-
-
+		
+		
 		//D3D11_MAPPED_SUBRESOURCE pdata;
 		//Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
 		//memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
 		//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
 
-		Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0, NULL, &cb, 0, 0);
+		Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0,NULL,&cb,0,0);
+
 
 		//頂点バッファ
 		UINT stride = sizeof(VERTEX);

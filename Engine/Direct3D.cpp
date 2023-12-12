@@ -163,6 +163,10 @@ HRESULT Direct3D::InitShader()
 		return E_FAIL;
 	}
 
+	if (FAILED(InitShaderPointLight()))
+	{
+		return E_FAIL;
+	}
 
 	return S_OK;
 
@@ -228,6 +232,67 @@ HRESULT Direct3D::InitShader3D()
 	}
 
 	return S_OK;
+}
+
+HRESULT Direct3D::InitShaderPointLight()
+{
+	using namespace Direct3D;
+	HRESULT hr;
+
+	//頂点シェーダの作成（コンパイル）
+	ID3DBlob* pCompileVS = nullptr;
+	D3DCompileFromFile(L"Simple3D.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
+	assert(pCompileVS != nullptr);
+	hr = pDevice_->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &(shaderBundle[SHADER_3D].pVertexShader_));
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "頂点シェーダの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+
+	//頂点インプットレイアウト
+	D3D11_INPUT_ELEMENT_DESC layout[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },	//位置
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(DirectX::XMVECTOR) , D3D11_INPUT_PER_VERTEX_DATA, 0 },//UV座標
+		{ "NORMAL",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(DirectX::XMVECTOR) * 2 ,	D3D11_INPUT_PER_VERTEX_DATA, 0 },//法線
+	};
+	hr = pDevice_->CreateInputLayout(layout, 3, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &(shaderBundle[SHADER_3D].pVertexLayout_));
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "頂点インプットレイアウトに失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+
+	SAFE_RELEASE(pCompileVS);
+
+	//ピクセルシェーダの作成（コンパイル）
+	ID3DBlob* pCompilePS = nullptr;
+	D3DCompileFromFile(L"Simple3D.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
+	assert(pCompilePS != nullptr);
+	hr = pDevice_->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &(shaderBundle[SHADER_3D].pPixelShader_));
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "ピクセルシェーダの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+	SAFE_RELEASE(pCompilePS);
+
+	//ラスタライザ作成
+	D3D11_RASTERIZER_DESC rdc = {};
+	rdc.CullMode = D3D11_CULL_BACK; //CULL_BACK = 見えないとこは書かない(陰面消去)
+	rdc.FillMode = D3D11_FILL_SOLID; //solid べた塗   Fill 塗りつぶし
+	rdc.FrontCounterClockwise = FALSE; //Clockwise 時計回り FrontClockwise 反時計周り
+	hr = pDevice_->CreateRasterizerState(&rdc, &(shaderBundle[SHADER_3D].pRasterizerState_));
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "ラスタライザの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+
 }
 
 HRESULT Direct3D::InitShader2D()
