@@ -213,6 +213,7 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 		pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
 		pMaterialList_[i].ambient = XMFLOAT4((float)ambient[0], (float)ambient[1], (float)ambient[2], 1.0f);
 		pMaterialList_[i].specular = XMFLOAT4(0,0,0,0); //とりあえずハイライトは黒　Phongではないとき出たらおかしいから
+		pMaterialList_[i].shininess = 1; //↑と大体同じ理由 
 
 
 		//Mayaで指定したのがフォンシェーダーだったら
@@ -221,7 +222,9 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 			//Mayaで指定したSpecularColorの情報
 			FbxDouble3 specular = pPhong->Specular;
 			pMaterialList_[i].specular = XMFLOAT4((float)specular[0], (float)specular[1], (float)specular[2], 1.0f);
-			//FbxDouble shiness = pPhong->Shininess;
+
+			FbxDouble shininess = pPhong->Shininess;
+			pMaterialList_[i].shininess = (float)shininess;
 		}
 
 
@@ -281,9 +284,12 @@ void Fbx::Draw(Transform& transform)
 		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
 		cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
+
 		cb.diffuseColor = pMaterialList_[i].diffuse;
 		cb.ambientColor = pMaterialList_[i].ambient;
 		cb.specularColor = pMaterialList_[i].specular;
+		cb.shininess = pMaterialList_[i].shininess;
+
 		//cb.lightPosition = LIGHT_DIERECTION;
 		//XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
 		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;

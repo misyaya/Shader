@@ -23,6 +23,7 @@ class Fbx
 		XMFLOAT4	diffuse;
 		XMFLOAT4    ambient;
 		XMFLOAT4    specular;
+		float shininess;
 	};
 
 	//ambient specular shinessも追加する
@@ -34,6 +35,7 @@ class Fbx
 		XMFLOAT4	diffuseColor;		// 拡散反射光＝マテリアルの色
 		XMFLOAT4	ambientColor;		// 環境光
 		XMFLOAT4	specularColor;		// 鏡面反射＝ハイライト
+		FLOAT		shininess;
 		BOOL		isTextured;		// テクスチャ貼ってあるかどうか
 	};
 

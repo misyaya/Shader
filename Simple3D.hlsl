@@ -16,6 +16,7 @@ cbuffer gmodel:register(b0)
 	float4		diffuseColor;	// 拡散反射光＝マテリアルの色
 	float4		ambientColor;	// 環境光
 	float4		specularColor;	// 鏡面反射＝ハイライト
+	float		shininess;
 	bool		isTextured;		// テクスチャ貼ってあるかどうか
 };
 
@@ -76,24 +77,24 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 float4 PS(VS_OUT inData) : SV_Target
 {
 	float4 lightSource = float4(1.0, 1.0, 1.0, 0.0);     //ライト色＆明るさ  Iin
-	float4 ambientSource = float4(0.2, 0.2, 0.2, 1.0);   //アンビエント係数  Ka
+	float4 ambientSource = ambientColor;   //アンビエント係数  Ka  直接かければいいだけだからこの変数別にいらないかも
 	float4 diffuse;
 	float4 ambient;
 	float4 NL = dot(inData.normal, normalize(lightPosition));
 	float4 reflect = normalize(2 * NL * inData.normal - normalize(lightPosition));  //入射光の反射ベクトル
 	//ここでspecularColor(スペキュラーの値が入っている)を掛けることでハイライト有のやつだけハイライトがつく
-	float4 specular = pow(saturate(dot(reflect, normalize(inData.eyev))),8) * specularColor;
+	float4 specular = pow(saturate(dot(reflect, normalize(inData.eyev))), shininess) * specularColor;
 	
 
 	if (isTextured == false)
 	{
 		diffuse = lightSource * diffuseColor * inData.color;
-		ambient = lightSource * diffuseColor * ambientSource;
+		ambient = lightSource * diffuseColor * ambientColor;
 	}
 	else
 	{
 		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * inData.color;
-		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientSource;
+		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
 	}
 	return (diffuse + ambient + specular);
 	
