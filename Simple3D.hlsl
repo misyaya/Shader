@@ -13,7 +13,9 @@ cbuffer gmodel:register(b0)
 	float4x4	matWVP;			// ワールド・ビュー・プロジェクションの合成行列
 	float4x4	matW;			//ワールド行列
 	float4x4    matNormal;		//ワールド行列
-	float4		diffuseColor;	// ディフューズカラー（マテリアルの色）
+	float4		diffuseColor;	// 拡散反射光＝マテリアルの色
+	float4		ambientColor;	// 環境光
+	float4		specularColor;	// 鏡面反射＝ハイライト
 	bool		isTextured;		// テクスチャ貼ってあるかどうか
 };
 
@@ -79,7 +81,9 @@ float4 PS(VS_OUT inData) : SV_Target
 	float4 ambient;
 	float4 NL = dot(inData.normal, normalize(lightPosition));
 	float4 reflect = normalize(2 * NL * inData.normal - normalize(lightPosition));  //入射光の反射ベクトル
-	float4 specular = pow(saturate(dot(reflect, normalize(inData.eyev))),8);
+	//ここでspecularColor(スペキュラーの値が入っている)を掛けることでハイライト有のやつだけハイライトがつく
+	float4 specular = pow(saturate(dot(reflect, normalize(inData.eyev))),8) * specularColor;
+	
 
 	if (isTextured == false)
 	{

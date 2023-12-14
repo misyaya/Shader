@@ -201,22 +201,31 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 	for (int i = 0; i < materialCount_; i++)
 	{
+		//i番目のマテリアル情報を取得
 		FbxSurfaceMaterial* pMaterial = pNode->GetMaterial(i);
 
-		//i番目のマテリアル情報を取得
-		//FbxSurfacePhong* pMaterial = (FbxSurfacePhong *)(pNode->GetMaterial(i));
-		//FbxDouble3 diffuse = pMaterial->Diffuse;
-		////diffuse[0],diffuse[1],diffuse[2]
-		//FbxDouble3 ambient = pMaterial->Ambient;
-		//
-		//if (pMaterial->GetClassId().Is(FbxSurfacePhong::ClassId))
-		//{
-		//	FbxDouble3 specular = pMaterial->Specular;
-		//	FbxDouble shiness = pMaterial->Shininess;
-		//}
+		FbxSurfacePhong* pPhong = (FbxSurfacePhong *)pMaterial;
 
-		//pMaterialList_[i].diffuse = XMFLOAT4{ (float)diffuse[0],diffuse[1],diffuse[2],1.0 };
-		//pMaterialList_[i].ambient = XMFLOAT4{ (float)diffuse[0],diffuse[1],diffuse[2],1.0 };
+		FbxDouble3  diffuse = pPhong->Diffuse;
+		FbxDouble3  ambient = pPhong->Ambient;
+		
+
+		pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
+		pMaterialList_[i].ambient = XMFLOAT4((float)ambient[0], (float)ambient[1], (float)ambient[2], 1.0f);
+		pMaterialList_[i].specular = XMFLOAT4(0,0,0,0); //とりあえずハイライトは黒　Phongではないとき出たらおかしいから
+
+
+		//Mayaで指定したのがフォンシェーダーだったら
+		if (pMaterial->GetClassId().Is(FbxSurfacePhong::ClassId))
+		{
+			//Mayaで指定したSpecularColorの情報
+			FbxDouble3 specular = pPhong->Specular;
+			pMaterialList_[i].specular = XMFLOAT4((float)specular[0], (float)specular[1], (float)specular[2], 1.0f);
+			//FbxDouble shiness = pPhong->Shininess;
+		}
+
+
+		
 
 		//テクスチャ情報
 		FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse);
@@ -248,8 +257,8 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 			//マテリアルの色
 			FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
-			FbxDouble3  diffuse = pMaterial->Diffuse;
-			pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
+			//FbxDouble3  diffuse = pMaterial->Diffuse;
+			//pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
 		}
 	}
 
@@ -267,11 +276,14 @@ void Fbx::Draw(Transform& transform)
 
 	for (int i = 0; i < materialCount_; i++)
 	{
+		//コンスタントバッファに情報を渡す
 		CONSTANT_BUFFER cb;
 		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
 		cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
 		cb.diffuseColor = pMaterialList_[i].diffuse;
+		cb.ambientColor = pMaterialList_[i].ambient;
+		cb.specularColor = pMaterialList_[i].specular;
 		//cb.lightPosition = LIGHT_DIERECTION;
 		//XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
 		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;

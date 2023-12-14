@@ -21,7 +21,8 @@ class Fbx
 	{
 		Texture*    pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
 		XMFLOAT4	diffuse;
-	//	XMFLOAT4    ambient;
+		XMFLOAT4    ambient;
+		XMFLOAT4    specular;
 	};
 
 	//ambient specular shinessも追加する
@@ -30,7 +31,9 @@ class Fbx
 		XMMATRIX	matWVP;  //wvp ワールドビュープロジェクション
 		XMMATRIX    matW; //w ワールド変換のみ
 		XMMATRIX	matNormal; //スケール×平行移動の逆行列
-		XMFLOAT4	diffuseColor;		// ディフューズカラー（マテリアルの色）
+		XMFLOAT4	diffuseColor;		// 拡散反射光＝マテリアルの色
+		XMFLOAT4	ambientColor;		// 環境光
+		XMFLOAT4	specularColor;		// 鏡面反射＝ハイライト
 		BOOL		isTextured;		// テクスチャ貼ってあるかどうか
 	};
 
