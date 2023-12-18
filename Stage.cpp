@@ -75,9 +75,8 @@ void Stage::Initialize()
     arrowZ.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
 
 
-
-    Camera::SetPosition(XMVECTOR{ 0, 10, -20, 0 });
-    Camera::SetTarget(XMVECTOR{ 0, 2, 0, 0 });
+    Camera::SetPosition(XMFLOAT3(0, 0, -20));
+    Camera::SetTarget(XMFLOAT3(0, 0, 0));;
 
     IntConstantBuffer();
 }
@@ -167,11 +166,11 @@ void Stage::Draw()
     Model::SetTransform(hDonuts_, transform_);
     Model::Draw(hDonuts_);
 
-   Model::SetTransform(hDonuts_, transform_);
-   Model::Draw(hDonuts_);
+    Model::SetTransform(hDonuts_, transform_);
+    Model::Draw(hDonuts_);
 
-   Model::SetTransform(hLight_, light);
-   Model::Draw(hLight_);
+    Model::SetTransform(hLight_, light);
+    Model::Draw(hLight_);
 
 }
 

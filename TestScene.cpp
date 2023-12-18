@@ -11,12 +11,7 @@ TestScene::TestScene(GameObject* parent)
 
 void TestScene::Initialize()
 {
-
 	Instantiate<Stage>(this);
-
-	Camera::SetPosition(XMFLOAT3(0, 0, -10));
-
-	Camera::SetTarget(XMFLOAT3(0, 0, 0));
 }
 
 void TestScene::Update()
