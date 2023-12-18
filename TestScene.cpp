@@ -14,9 +14,9 @@ void TestScene::Initialize()
 
 	Instantiate<Stage>(this);
 
-	Camera::SetPosition(XMFLOAT3(2, 6, -8));
+	Camera::SetPosition(XMFLOAT3(0, 0, -10));
 
-	Camera::SetTarget(XMFLOAT3(0, 2, 0));
+	Camera::SetTarget(XMFLOAT3(0, 0, 0));
 }
 
 void TestScene::Update()
