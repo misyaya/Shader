@@ -87,20 +87,20 @@ float4 PS(VS_OUT inData) : SV_Target
 	//ここでspecularColor(スペキュラーの値が入っている)を掛けることでハイライト有のやつだけハイライトがつく
 	float4 specular = pow(saturate(dot(reflect, normalize(inData.eyev))), shininess) * specularColor;
 
-	float n1 = float4(1 / 4.0, 1 / 4.0, 1 / 4.0, 1);
-	float n2 = float4(2 / 4.0, 2 / 4.0, 2 / 4.0, 1);
-	float n3 = float4(3 / 4.0, 3 / 4.0, 3 / 4.0, 1);
-	//float n4 = float4(4 / 4.0, 4 / 4.0, 4 / 4.0, 1);
-
-	float4 tI = 0.1 * step(n1, inData.color) + 0.2 * step(n2, inData.color)
-		+ 0.3 * step(n3, inData.color);
+	//float n1 = float4(1 / 4.0, 1 / 4.0, 1 / 4.0, 1);
+	//float n2 = float4(2 / 4.0, 2 / 4.0, 2 / 4.0, 1);
+	//float n3 = float4(3 / 4.0, 3 / 4.0, 3 / 4.0, 1);
+	////float n4 = float4(4 / 4.0, 4 / 4.0, 4 / 4.0, 1);
+	//float4 tI = 0.1 * step(n1, inData.color) + 0.2 * step(n2, inData.color)
+	//	+ 0.3 * step(n3, inData.color);
 
 	float2 uv;
 	uv.x = inData.color.x;//N・Lの値にする
-	uv.y = 0;
+	uv.y = abs(dot(inData.normal, normalize(inData.eyev)));
 
-	//return g_toon_texture.Sample(g_sampler, uv);
-
+	
+	float4 tI =  g_toon_texture.Sample(g_sampler, uv);
+	
 	if (isTextured == false)
 	{
 		diffuse = lightSource * diffuseColor * tI;
@@ -108,12 +108,18 @@ float4 PS(VS_OUT inData) : SV_Target
 	}
 	else
 	{
-		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * tI;
+		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * tI;;
 		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
 	}
 	
+	////輪郭＝視線ベクトルと面の法線の角度が９０度付近
+	//if (abs(dot(inData.normal,normalize(inData.eyev))) < 0.3)
+	//	return float4(0, 0, 0, 0);
+	//else
+	//	return float4(1, 1, 1, 0);
 
-	////return (diffuse + ambient + specular);
-	//return (diffuse + specular);
+
+	//return (diffuse + ambient + specular);
+	return (diffuse + specular);
 
 }

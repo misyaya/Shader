@@ -86,6 +86,8 @@ void Stage::Update()
 {
     Model::GetModel(hLight_)->SetLightPos(lightSourcePosition_);
 
+    donutsTr.rotate_.y += 0.5f;
+
     if (Input::IsKey(DIK_RIGHT))
     {
         XMFLOAT4 p = GetLightPos();
@@ -163,10 +165,7 @@ void Stage::Draw()
     Model::SetTransform(hArrowZ_, arrowZ);
     Model::Draw(hArrowZ_);
 
-    Model::SetTransform(hDonuts_, transform_);
-    Model::Draw(hDonuts_);
-
-    Model::SetTransform(hDonuts_, transform_);
+    Model::SetTransform(hDonuts_, donutsTr);
     Model::Draw(hDonuts_);
 
     Model::SetTransform(hLight_, light);
