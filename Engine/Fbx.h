@@ -65,6 +65,7 @@ class Fbx
 	bool IsFlatColor_;
 	XMFLOAT4 dColor_;
 	XMFLOAT4 lightSourcePosition_;
+	Texture* pToonTex_;
 public:
 
 	Fbx();
