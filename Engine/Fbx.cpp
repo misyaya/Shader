@@ -209,15 +209,15 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 		//i番目のマテリアル情報を取得
 		FbxSurfaceMaterial* pMaterial = pNode->GetMaterial(i);
 
-		FbxSurfacePhong* pPhong = (FbxSurfacePhong *)pMaterial;
+		FbxSurfacePhong* pPhong = (FbxSurfacePhong*)pMaterial;
 
 		FbxDouble3  diffuse = pPhong->Diffuse;
 		FbxDouble3  ambient = pPhong->Ambient;
-		
+
 
 		pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
 		pMaterialList_[i].ambient = XMFLOAT4((float)ambient[0], (float)ambient[1], (float)ambient[2], 1.0f);
-		pMaterialList_[i].specular = XMFLOAT4(0,0,0,0); //とりあえずハイライトは黒　Phongではないとき出たらおかしいから
+		pMaterialList_[i].specular = XMFLOAT4(0, 0, 0, 0); //とりあえずハイライトは黒　Phongではないとき出たらおかしいから
 		pMaterialList_[i].shininess = 1; //↑と大体同じ理由 ただし、Simple3Dのべき乗の値なので0ではなく1にする
 
 
@@ -272,7 +272,7 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 void Fbx::Draw(Transform& transform)
 {
-	Direct3D::SetShader(SHADER_3D);
+	Direct3D::SetShader(SHADER_TOON);
 
 	transform.Calclation();
 
@@ -294,14 +294,14 @@ void Fbx::Draw(Transform& transform)
 		//cb.lightPosition = LIGHT_DIERECTION;
 		//XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
 		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
-		
-		
+
+
 		//D3D11_MAPPED_SUBRESOURCE pdata;
 		//Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
 		//memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
 		//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
 
-		Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0,NULL,&cb,0,0);
+		Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0, NULL, &cb, 0, 0);
 
 
 		//頂点バッファ

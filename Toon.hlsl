@@ -1,8 +1,10 @@
 //───────────────────────────────────────
 // テクスチャ＆サンプラーデータのグローバル変数定義
 //───────────────────────────────────────
-Texture2D	g_texture : register(t0);	//テクスチャー
+Texture2D		g_texture : register(t0);	//テクスチャー
 SamplerState	g_sampler : register(s0);	//サンプラー
+
+Texture2D		g_toon_texture : register(t1);
 
 //───────────────────────────────────────
  // コンスタントバッファ
@@ -46,6 +48,8 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 	//ピクセルシェーダーへ渡す情報
 	VS_OUT outData = (VS_OUT)0;
 
+	//pos = pos + normal * 0.5;
+
 	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
 	//スクリーン座標に変換し、ピクセルシェーダーへ
 	outData.pos = mul(pos, matWVP);
@@ -85,58 +89,39 @@ float4 PS(VS_OUT inData) : SV_Target
 	//ここでspecularColor(スペキュラーの値が入っている)を掛けることでハイライト有のやつだけハイライトがつく
 	float4 specular = pow(saturate(dot(reflect, normalize(inData.eyev))), shininess) * specularColor;
 
-	/*float4 nk;
-	if (inData.color.x < 1 / 3.0)
-	{
-		nk = float4(0.0, 0.0, 0.0, 0.0);
-	}
-	else if (inData.color.x < 2 / 3.0)
-	{
-		nk = float4(0.5, 0.5, 0.5, 0.5);
-	}
-	else
-	{
-		nk = float4(1.0, 1.0, 1.0, 1.0);
-	}*/
+	//float n1 = float4(1 / 4.0, 1 / 4.0, 1 / 4.0, 1);
+	//float n2 = float4(2 / 4.0, 2 / 4.0, 2 / 4.0, 1);
+	//float n3 = float4(3 / 4.0, 3 / 4.0, 3 / 4.0, 1);
+	////float n4 = float4(4 / 4.0, 4 / 4.0, 4 / 4.0, 1);
+	//float4 tI = 0.1 * step(n1, inData.color) + 0.2 * step(n2, inData.color)
+	//	+ 0.3 * step(n3, inData.color);
 
-	float n1 = float4(1 / 4.0, 1 / 4.0, 1 / 4.0, 1);
-	float n2 = float4(2 / 4.0, 2 / 4.0, 2 / 4.0, 1);
-	float n3 = float4(3 / 4.0, 3 / 4.0, 3 / 4.0, 1);
-	float n4 = float4(4 / 4.0, 4 / 4.0, 4 / 4.0, 1);
+	float2 uv;
+	uv.x = inData.color.x;//N・Lの値にする
+	uv.y = abs(dot(inData.normal, normalize(inData.eyev)));
 
-	float4 tl = 0.1 * step(n1, inData.color) + 0.2 * step(n2, inData.color)
-		+ 0.3 * step(n3, inData.color) + 0.4 * step(n4, inData.color);
+
+	float4 tI = g_toon_texture.Sample(g_sampler, uv);
 
 	if (isTextured == false)
 	{
-		diffuse = lightSource * diffuseColor * tl;
+		diffuse = lightSource * diffuseColor * tI;
 		ambient = lightSource * diffuseColor * ambientColor;
 	}
 	else
 	{
-		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * tl;
+		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * tI;;
 		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
 	}
 
+	////輪郭＝視線ベクトルと面の法線の角度が９０度付近
+	//if (abs(dot(inData.normal,normalize(inData.eyev))) < 0.3)
+	//	return float4(0, 0, 0, 0);
+	//else
+	//	return float4(1, 1, 1, 0);
 
 
 	//return (diffuse + ambient + specular);
 	return (diffuse + specular);
-
-
-	//specular = pow(saturate(dot(diffues,ambient),))
-
-
-	//float4 output = g_texture.Sample(g_sampler, inData.uv);
-	//float4 output = g_texture.Sample(g_sampler, inData.uv);
-
-	//グレースケール変換
-	//float grayValue = dot(output.rgb, float3(0.298912, 0.586611, 0.114478));
-	//float4 grayColor = float4(grayValue, grayValue, grayValue, output.a);
-
-	//float4 output = floor(g_texture.Sample(g_sampler, inData.uv)*8.0)/8;
-
-
-	//return grayColor;
 
 }
