@@ -84,44 +84,22 @@ float4 PS(VS_OUT inData) : SV_Target
 	float4 reflect = normalize(2 * NL * inData.normal - normalize(lightPosition));  //入射光の反射ベクトル
 	//ここでspecularColor(スペキュラーの値が入っている)を掛けることでハイライト有のやつだけハイライトがつく
 	float4 specular = pow(saturate(dot(reflect, normalize(inData.eyev))), shininess) * specularColor;
-
-	/*float4 nk;
-	if (inData.color.x < 1 / 3.0)
-	{
-		nk = float4(0.0, 0.0, 0.0, 0.0);
-	}
-	else if (inData.color.x < 2 / 3.0)
-	{
-		nk = float4(0.5, 0.5, 0.5, 0.5);
-	}
-	else
-	{
-		nk = float4(1.0, 1.0, 1.0, 1.0);
-	}*/
-
-	float n1 = float4(1 / 4.0, 1 / 4.0, 1 / 4.0, 1);
-	float n2 = float4(2 / 4.0, 2 / 4.0, 2 / 4.0, 1);
-	float n3 = float4(3 / 4.0, 3 / 4.0, 3 / 4.0, 1);
-	float n4 = float4(4 / 4.0, 4 / 4.0, 4 / 4.0, 1);
-
-	float4 tl = 0.1 * step(n1, inData.color) + 0.2 * step(n2, inData.color)
-		+ 0.3 * step(n3, inData.color) + 0.4 * step(n4, inData.color);
-
+	
 	if (isTextured == false)
 	{
-		diffuse = lightSource * diffuseColor * tl;
+		diffuse = lightSource * diffuseColor * inData.color;
 		ambient = lightSource * diffuseColor * ambientColor;
 	}
 	else
 	{
-		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * tl;
+		diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * inData.color;
 		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
 	}
 
 
 
-	//return (diffuse + ambient + specular);
-	return (diffuse + specular);
+	return (diffuse + ambient + specular);
+	
 
 
 	//specular = pow(saturate(dot(diffues,ambient),))
