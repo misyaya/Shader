@@ -48,7 +48,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 	//ピクセルシェーダーへ渡す情報
 	VS_OUT outData = (VS_OUT)0;
 
-	//pos = pos + normal * 0.5;
+	pos = pos + normal * 0.5;
 
 	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
 	//スクリーン座標に変換し、ピクセルシェーダーへ
@@ -115,13 +115,13 @@ float4 PS(VS_OUT inData) : SV_Target
 	}
 
 	////輪郭＝視線ベクトルと面の法線の角度が９０度付近
-	//if (abs(dot(inData.normal,normalize(inData.eyev))) < 0.3)
-	//	return float4(0, 0, 0, 0);
-	//else
-	//	return float4(1, 1, 1, 0);
+	if (abs(dot(inData.normal,normalize(inData.eyev))) < 0.3)
+		return float4(0, 0, 0, 0);
+	else
+		return (diffuse + specular);
 
 
 	//return (diffuse + ambient + specular);
-	return (diffuse + specular);
+	
 
 }

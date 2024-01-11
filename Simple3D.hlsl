@@ -97,9 +97,12 @@ float4 PS(VS_OUT inData) : SV_Target
 	}
 
 
+	/*if (abs(dot(inData.normal, normalize(inData.eyev))) < 0.3)
+		return float4(0, 0, 0, 0);
+	else
+		return (diffuse + ambient + specular);*/
 
 	return (diffuse + ambient + specular);
-	
 
 
 	//specular = pow(saturate(dot(diffues,ambient),))
