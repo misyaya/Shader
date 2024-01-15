@@ -10,14 +10,14 @@ SamplerState	g_sampler : register(s0);	//サンプラー
 //───────────────────────────────────────
 cbuffer gmodel:register(b0)
 {
-	float4x4	matWVP;			// ワールド・ビュー・プロジェクションの合成行列
+	float4x4	matWVP;			//ワールド・ビュー・プロジェクションの合成行列
 	float4x4	matW;			//ワールド行列
-	float4x4    matNormal;		//ワールド行列
-	float4		diffuseColor;	// 拡散反射光＝マテリアルの色
-	float4		ambientColor;	// 環境光
-	float4		specularColor;	// 鏡面反射＝ハイライト
+	float4x4    matNormal;		//法線変形用の行列
+	float4		diffuseColor;	//拡散反射光＝マテリアルの色
+	float4		ambientColor;	//環境光
+	float4		specularColor;	//鏡面反射＝ハイライト
 	float		shininess;
-	bool		isTextured;		// テクスチャ貼ってあるかどうか
+	bool		isTextured;		//テクスチャ貼ってあるかどうか
 };
 
 cbuffer gmodel:register(b1)

@@ -272,7 +272,7 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 void Fbx::Draw(Transform& transform)
 {
-	Direct3D::SetShader(SHADER_TOONOUTLINE);
+	Direct3D::SetShader(SHADER_OUTLINE);
 
 	transform.Calclation();
 
