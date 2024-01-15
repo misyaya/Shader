@@ -43,7 +43,7 @@ struct VS_OUT
 //───────────────────────────────────────
 // 頂点シェーダ
 //───────────────────────────────────────
-float4 VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
+float4 VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL):SV_POSITION
 {
 	//ピクセルシェーダーへ渡す情報
 	//VS_OUT outData = (VS_OUT)0;
