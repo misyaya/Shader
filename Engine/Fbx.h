@@ -19,10 +19,11 @@ class Fbx
 	//マテリアル
 	struct MATERIAL
 	{
-		Texture*    pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
-		XMFLOAT4	diffuse;
-		XMFLOAT4    ambient;
-		XMFLOAT4    specular;
+		Texture* pTexture_; //これがポインタだからincludeじゃなくて前方宣言でいい
+		Texture* pNormalTexture;
+		XMFLOAT4 diffuse;
+		XMFLOAT4 ambient;
+		XMFLOAT4 specular;
 		float shininess;
 	};
 
@@ -41,9 +42,10 @@ class Fbx
 
 	struct VERTEX
 	{
-		XMVECTOR position;
-		XMVECTOR uv;
-		XMVECTOR normal;
+		XMVECTOR position; //位置
+		XMVECTOR uv; //テクスチャ位置
+		XMVECTOR normal;  //法線
+		XMVECTOR tangent; //接線
 	};
 
 

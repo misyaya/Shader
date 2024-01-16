@@ -102,6 +102,24 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 		}
 	}
 
+	//接線
+	for (int i = 0; i < polygonCount_; i++)
+	{
+		int sIndex = mesh->GetPolygonVertexIndex(i);
+
+		//タンジェントをとる
+		FbxGeometryElementTangent* t = mesh->GetElementTangent(0);
+
+		//XYZWをとる
+		FbxVector4 tangent = t->GetDirectArray().GetAt(sIndex).mData;
+
+		for (int j = 0; j < 3; j++)
+		{
+			int index = mesh->GetPolygonVertices()[sIndex + j];
+			vertices[index].tangent
+				= { (float)tangent[0], (float)tangent[1], (float)tangent[2], (float)tangent[3] };
+		}
+	}
 
 	// 頂点バッファ
 	D3D11_BUFFER_DESC bd_vertex;
@@ -232,41 +250,76 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 			pMaterialList_[i].shininess = (float)shininess;
 		}
 
-
-		//テクスチャ情報
-		FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse);
-
-		//テクスチャの数
-		int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
-
-		//テクスチャあり
-		if (fileTextureCount)
+		//通常テクスチャ
 		{
-			FbxFileTexture* textureInfo = lProperty.GetSrcObject<FbxFileTexture>(0);
-			const char* textureFilePath = textureInfo->GetRelativeFileName();
+			//テクスチャ情報
+			FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse);
 
-			//ファイル名+拡張だけにする
-			char name[_MAX_FNAME];	//ファイル名
-			char ext[_MAX_EXT];	//拡張子
-			_splitpath_s(textureFilePath, nullptr, 0, nullptr, 0, name, _MAX_FNAME, ext, _MAX_EXT);
-			wsprintf(name, "%s%s", name, ext);
+			//テクスチャの数
+			int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
 
-			//ファイルからテクスチャ作成
-			pMaterialList_[i].pTexture_ = new Texture;
-			HRESULT hr = pMaterialList_[i].pTexture_->Load(name);
-			assert(hr == S_OK);
+			//テクスチャあり
+			if (fileTextureCount)
+			{
+				FbxFileTexture* textureInfo = lProperty.GetSrcObject<FbxFileTexture>(0);
+				const char* textureFilePath = textureInfo->GetRelativeFileName();
+
+				//ファイル名+拡張だけにする
+				char name[_MAX_FNAME];	//ファイル名
+				char ext[_MAX_EXT];	//拡張子
+				_splitpath_s(textureFilePath, nullptr, 0, nullptr, 0, name, _MAX_FNAME, ext, _MAX_EXT);
+				wsprintf(name, "%s%s", name, ext);
+
+				//ファイルからテクスチャ作成
+				pMaterialList_[i].pTexture_ = new Texture;
+				HRESULT hr = pMaterialList_[i].pTexture_->Load(name);
+				assert(hr == S_OK);
+			}
+			//テクスチャ無し
+			else
+			{
+				pMaterialList_[i].pTexture_ = nullptr;
+
+				//マテリアルの色
+				FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
+			}
 		}
-		//テクスチャ無し
-		else
-		{
-			pMaterialList_[i].pTexture_ = nullptr;
 
-			//マテリアルの色
-			FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
+		//ノーマルマップ用テクスチャ
+		{
+			//テクスチャ情報
+			FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sNormalMap);
+
+			//テクスチャの数
+			int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
+
+			//テクスチャあり
+			if (fileTextureCount)
+			{
+				FbxFileTexture* textureInfo = lProperty.GetSrcObject<FbxFileTexture>(0);
+				const char* textureFilePath = textureInfo->GetRelativeFileName();
+
+				//ファイル名+拡張だけにする
+				char name[_MAX_FNAME];	//ファイル名
+				char ext[_MAX_EXT];	//拡張子
+				_splitpath_s(textureFilePath, nullptr, 0, nullptr, 0, name, _MAX_FNAME, ext, _MAX_EXT);
+				wsprintf(name, "%s%s", name, ext);
+
+				//ファイルからテクスチャ作成
+				pMaterialList_[i].pNormalTexture = new Texture;
+				HRESULT hr = pMaterialList_[i].pNormalTexture->Load(name);
+				assert(hr == S_OK);
+			}
+			//テクスチャ無し
+			else
+			{
+				pMaterialList_[i].pNormalTexture = nullptr;
+
+				//マテリアルの色
+				//FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
+			}
 		}
 	}
-
-
 }
 
 
@@ -325,6 +378,12 @@ void Fbx::Draw(Transform& transform)
 				Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
 				ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture_->GetSRV();
 				Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
+			}
+
+			if (pMaterialList_[i].pNormalTexture)
+			{
+				ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pNormalTexture->GetSRV();
+				Direct3D::pContext_->PSSetShaderResources(2, 1, &pSRV);
 			}
 
 			ID3D11ShaderResourceView* pSRVToon = pToonTex_->GetSRV();
