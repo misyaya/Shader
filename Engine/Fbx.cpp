@@ -58,8 +58,8 @@ HRESULT Fbx::Load(std::string fileName)
 	pFbxManager->Destroy();
 
 	//トゥーンテクスチャー読み込み
-	pToonTex_ = new Texture;
-	pToonTex_->Load("Assets/toonTexture.png");
+	//pToonTex_ = new Texture;
+	//pToonTex_->Load("Assets/toonTexture.png");
 
 	return S_OK;
 }
@@ -105,19 +105,32 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 	//接線
 	for (int i = 0; i < polygonCount_; i++)
 	{
+		mesh->GetElementTangentCount();//これが0
 		int sIndex = mesh->GetPolygonVertexIndex(i);
 
 		//タンジェントをとる
 		FbxGeometryElementTangent* t = mesh->GetElementTangent(0);
 
-		//XYZWをとる
-		FbxVector4 tangent = t->GetDirectArray().GetAt(sIndex).mData;
-
-		for (int j = 0; j < 3; j++)
+		if(t)
 		{
-			int index = mesh->GetPolygonVertices()[sIndex + j];
-			vertices[index].tangent
-				= { (float)tangent[0], (float)tangent[1], (float)tangent[2], (float)tangent[3] };
+			//XYZWをとる
+			FbxVector4 tangent = t->GetDirectArray().GetAt(sIndex).mData;
+
+			for (int j = 0; j < 3; j++)
+			{
+				int index = mesh->GetPolygonVertices()[sIndex + j];
+				vertices[index].tangent
+					= { (float)tangent[0], (float)tangent[1], (float)tangent[2], (float)tangent[3] };
+			}
+		}
+		else
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				int index = mesh->GetPolygonVertices()[sIndex + j];
+				vertices[index].tangent
+					= { 0.0f, 0.0f, 0.0f, 0.0f };
+			}
 		}
 	}
 
@@ -325,12 +338,13 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 void Fbx::Draw(Transform& transform)
 {
-	Direct3D::SetShader(SHADER_OUTLINE);
+	//Direct3D::SetShader(SHADER_OUTLINE);
+	Direct3D::SetShader(SHADER_NORMALMAP);
 
-	transform.Calclation();
+	transform.Calclation();//トランスフォームを計算
 
-	for(int i = 0; i < 2; i++)
-	{
+	//for(int i = 0; i < 2; i++)
+	//{
 
 		for (int i = 0; i < materialCount_; i++)
 		{
@@ -391,8 +405,8 @@ void Fbx::Draw(Transform& transform)
 
 			//描画
 			Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
-		}
-		Direct3D::SetShader(SHADER_TOON);
+		//}
+		//Direct3D::SetShader(SHADER_TOON);
 	}
 }
 
