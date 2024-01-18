@@ -102,35 +102,25 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 		}
 	}
 
-	//接線
+	FbxGeometryElementTangent* t = mesh->GetElementTangent(0);
+
+	//タンジェント取得
 	for (int i = 0; i < polygonCount_; i++)
 	{
-		mesh->GetElementTangentCount();//これが0
+		FbxVector4 tangent{ 0,0,0,0 };
 		int sIndex = mesh->GetPolygonVertexIndex(i);
-
-		//タンジェントをとる
-		FbxGeometryElementTangent* t = mesh->GetElementTangent(0);
 
 		if(t)
 		{
 			//XYZWをとる
-			FbxVector4 tangent = t->GetDirectArray().GetAt(sIndex).mData;
-
-			for (int j = 0; j < 3; j++)
-			{
-				int index = mesh->GetPolygonVertices()[sIndex + j];
-				vertices[index].tangent
-					= { (float)tangent[0], (float)tangent[1], (float)tangent[2], (float)tangent[3] };
-			}
+			tangent = t->GetDirectArray().GetAt(sIndex).mData;
 		}
-		else
+
+		for (int j = 0; j < 3; j++)
 		{
-			for (int j = 0; j < 3; j++)
-			{
-				int index = mesh->GetPolygonVertices()[sIndex + j];
-				vertices[index].tangent
-					= { 0.0f, 0.0f, 0.0f, 0.0f };
-			}
+			int index = mesh->GetPolygonVertices()[sIndex + j];
+			vertices[index].tangent
+				= XMVectorSet((float)tangent[0], (float)tangent[1], (float)tangent[2], 0.0f);
 		}
 	}
 
@@ -294,14 +284,14 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 				pMaterialList_[i].pTexture_ = nullptr;
 
 				//マテリアルの色
-				FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
+				//FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
 			}
 		}
 
 		//ノーマルマップ用テクスチャ
 		{
 			//テクスチャ情報
-			FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sNormalMap);
+			FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sBump);
 
 			//テクスチャの数
 			int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
@@ -343,70 +333,68 @@ void Fbx::Draw(Transform& transform)
 
 	transform.Calclation();//トランスフォームを計算
 
-	//for(int i = 0; i < 2; i++)
-	//{
 
-		for (int i = 0; i < materialCount_; i++)
+	for (int i = 0; i < materialCount_; i++)
+	{
+		//コンスタントバッファに情報を渡す
+		CONSTANT_BUFFER cb;
+		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
+		cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
+
+		cb.diffuseColor = pMaterialList_[i].diffuse;
+		cb.ambientColor = pMaterialList_[i].ambient;
+		cb.specularColor = pMaterialList_[i].specular;
+		cb.shininess = pMaterialList_[i].shininess;
+
+		//cb.lightPosition = LIGHT_DIERECTION;
+		//XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
+		cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
+		cb.isNormalTexture = pMaterialList_[i].pNormalTexture != nullptr;
+
+		//D3D11_MAPPED_SUBRESOURCE pdata;
+		//Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
+		//memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
+		//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
+
+		Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0, NULL, &cb, 0, 0);
+
+
+		//頂点バッファ
+		UINT stride = sizeof(VERTEX);
+		UINT offset = 0;
+		Direct3D::pContext_->IASetVertexBuffers(0, 1, &pVertexBuffer_, &stride, &offset);
+
+		// インデックスバッファーをセット
+		stride = sizeof(int);
+		offset = 0;
+		Direct3D::pContext_->IASetIndexBuffer(pIndexBuffer_[i], DXGI_FORMAT_R32_UINT, 0);
+
+		//コンスタントバッファ　　0,1→バッファの番号
+		Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
+		Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
+
+		if (pMaterialList_[i].pTexture_)
 		{
-			//コンスタントバッファに情報を渡す
-			CONSTANT_BUFFER cb;
-			cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
-			cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
-			cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
+			ID3D11SamplerState* pSampler = pMaterialList_[i].pTexture_->GetSampler();
+			Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
 
-			cb.diffuseColor = pMaterialList_[i].diffuse;
-			cb.ambientColor = pMaterialList_[i].ambient;
-			cb.specularColor = pMaterialList_[i].specular;
-			cb.shininess = pMaterialList_[i].shininess;
+			ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture_->GetSRV();
+			Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
+		}
 
-			//cb.lightPosition = LIGHT_DIERECTION;
-			//XMStoreFloat4(&cb.eyePos, Camera::GetEyePosition());
-			cb.isTextured = pMaterialList_[i].pTexture_ != nullptr;
+		if (pMaterialList_[i].pNormalTexture)
+		{
+			ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pNormalTexture->GetSRV();
+			Direct3D::pContext_->PSSetShaderResources(1, 1, &pSRV);
+		}
 
+		ID3D11ShaderResourceView* pSRVToon = pToonTex_->GetSRV();
+		Direct3D::pContext_->PSSetShaderResources(1, 1, &pSRVToon);
 
-			//D3D11_MAPPED_SUBRESOURCE pdata;
-			//Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
-			//memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
-			//Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
-
-			Direct3D::pContext_->UpdateSubresource(pConstantBuffer_, 0, NULL, &cb, 0, 0);
-
-
-			//頂点バッファ
-			UINT stride = sizeof(VERTEX);
-			UINT offset = 0;
-			Direct3D::pContext_->IASetVertexBuffers(0, 1, &pVertexBuffer_, &stride, &offset);
-
-			// インデックスバッファーをセット
-			stride = sizeof(int);
-			offset = 0;
-			Direct3D::pContext_->IASetIndexBuffer(pIndexBuffer_[i], DXGI_FORMAT_R32_UINT, 0);
-
-			//コンスタントバッファ　　0,1→バッファの番号
-			Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
-			Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
-
-			if (pMaterialList_[i].pTexture_)
-			{
-				ID3D11SamplerState* pSampler = pMaterialList_[i].pTexture_->GetSampler();
-				Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
-				ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture_->GetSRV();
-				Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
-			}
-
-			if (pMaterialList_[i].pNormalTexture)
-			{
-				ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pNormalTexture->GetSRV();
-				Direct3D::pContext_->PSSetShaderResources(2, 1, &pSRV);
-			}
-
-			ID3D11ShaderResourceView* pSRVToon = pToonTex_->GetSRV();
-			Direct3D::pContext_->PSSetShaderResources(1, 1, &pSRVToon);
-
-			//描画
-			Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
-		//}
-		//Direct3D::SetShader(SHADER_TOON);
+		//描画
+		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
+		
 	}
 }
 

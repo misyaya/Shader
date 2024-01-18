@@ -30,22 +30,23 @@ class Fbx
 	//ambient specular shinessも追加する
 	struct CONSTANT_BUFFER
 	{
-		XMMATRIX	matWVP;  //wvp ワールドビュープロジェクション
-		XMMATRIX    matW; //w ワールド変換のみ
-		XMMATRIX	matNormal; //スケール×平行移動の逆行列
-		XMFLOAT4	diffuseColor;		// 拡散反射光＝マテリアルの色
-		XMFLOAT4	ambientColor;		// 環境光
-		XMFLOAT4	specularColor;		// 鏡面反射＝ハイライト
+		XMMATRIX	matWVP;				//wvp ワールドビュープロジェクション
+		XMMATRIX    matW;				//w ワールド変換のみ
+		XMMATRIX	matNormal;			//スケール×平行移動の逆行列
+		XMFLOAT4	diffuseColor;		//拡散反射光＝マテリアルの色
+		XMFLOAT4	ambientColor;		//環境光
+		XMFLOAT4	specularColor;		//鏡面反射＝ハイライト
 		FLOAT		shininess;
-		BOOL		isTextured;		// テクスチャ貼ってあるかどうか
+		BOOL		isTextured;			//テクスチャ貼ってあるかどうか
+		BOOL		isNormalTexture;
 	};
 
 	struct VERTEX
 	{
 		XMVECTOR position; //位置
-		XMVECTOR uv; //テクスチャ位置
-		XMVECTOR normal;  //法線
-		XMVECTOR tangent; //接線
+		XMVECTOR uv;	   //テクスチャ位置
+		XMVECTOR normal;   //法線
+		XMVECTOR tangent;  //接線
 	};
 
 
@@ -55,7 +56,7 @@ class Fbx
 
 
 	ID3D11Buffer* pVertexBuffer_;      //頂点バッファ
-	ID3D11Buffer** pIndexBuffer_;       //インデックスバッファ
+	ID3D11Buffer** pIndexBuffer_;      //インデックスバッファ
 	ID3D11Buffer* pConstantBuffer_;    //コンスタントバッファ
 	MATERIAL* pMaterialList_;
 	std::vector <int> indexCount_;
