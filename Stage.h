@@ -16,6 +16,7 @@ class Stage : public GameObject
     int hArrowZ_;
     int hDonuts_;
     int hLight_;
+    int hDice_;
 
 
     Transform arrowX;

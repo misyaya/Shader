@@ -30,7 +30,7 @@ void Stage::IntConstantBuffer()
 //コンストラクタ
 Stage::Stage(GameObject* parent)
     :GameObject(parent, "Stage"),
-    hArrowX_(-1), hArrowY_(-1), hArrowZ_(-1), hDonuts_(-1), hLight_(-1), lightSourcePosition_()
+    hArrowX_(-1), hArrowY_(-1), hArrowZ_(-1), hDonuts_(-1), hLight_(-1), lightSourcePosition_(),hDice_(-1)
 {
 }
 
@@ -61,6 +61,9 @@ void Stage::Initialize()
     //ライトの誘導の玉
     hLight_ = Model::Load("Assets/light.fbx");
     assert(hLight_ >= 0);
+
+    hDice_ = Model::Load("Assets/dice.fbx");
+    assert(hDice_ >= 0);
 
 
     arrowX.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
@@ -171,6 +174,8 @@ void Stage::Draw()
     Model::SetTransform(hLight_, light);
     Model::Draw(hLight_);
 
+    Model::SetTransform(hDice_, transform_);
+    Model::Draw(hDice_);
 }
 
 //開放
