@@ -58,8 +58,8 @@ HRESULT Fbx::Load(std::string fileName)
 	pFbxManager->Destroy();
 
 	//トゥーンテクスチャー読み込み
-	//pToonTex_ = new Texture;
-	//pToonTex_->Load("Assets/toonTexture.png");
+	pToonTex_ = new Texture;
+	pToonTex_->Load("Assets/toonTexture.png");
 
 	return S_OK;
 }
