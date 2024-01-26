@@ -37,9 +37,9 @@ struct VS_OUT
 	float2 uv     : TEXCOORD;		//UV座標
 	float4 eyev   : POSITION;       //ワールド座標用に変換された視線ベクトル
 	float4 Neyev  : POSITION1;		//ノーマルマップ用の説空間に変換された視線ベクトル
-	float4 normal : POSITION2;		//法線ベクトル
-	float4 light  : POSITION3;		//ライトを接空間に変換したベクトル
-	float4 color  : POSITION4;      //色（明るさ）
+	float4 normal : NORMAL;			//法線ベクトル
+	float4 light  : POSITION2;		//ライトを接空間に変換したベクトル
+	float4 color  : COLOR;			//色（明るさ）
 };
 
 //───────────────────────────────────────
@@ -55,21 +55,18 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 	outData.pos = mul(pos, matWVP);
 	outData.uv = (float2)uv;
 
-	float3 binormal = cross(normal, tangent);
+	float3 tmp = cross(tangent, normal);
+	float4 binormal = { tmp, 0 };
+	binormal = mul(binormal, matNormal);
+	binormal = normalize(binormal);
 
 	//法線を回転
 	normal.w = 0;
-	normal = mul(normal, matNormal);
-	normal = normalize(normal); //法線ベクトルをローカル座標に変換したやつ
-	normal.w = 0;
-	outData.normal = normal;
-
-	tangent.w = 0;
+	outData.normal = normalize(mul(normal, matNormal));
+	
 	tangent = mul(tangent, matNormal);
-	tangent = normalize(tangent); //接線ベクトルをローカル座標に変換したもの
-
-	binormal = mul(binormal, matNormal);
-	binormal = normalize(binormal); //従法線ベクトルをローカル座標に変換したもの
+	tangent.w = 0;
+	tangent = normalize(tangent);
 
 	float4 posw = mul(pos, matW);
 	outData.eyev = normalize(posw - eyePosition); //ワールド座標の視線ベクトル
@@ -90,7 +87,6 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 	outData.light.y = dot(light, binormal);
 	outData.light.z = dot(light, normal);
 	outData.light.w = 0;
-	
 
 	//まとめて出力
 	return outData;
@@ -114,21 +110,20 @@ float4 PS(VS_OUT inData) : SV_Target
 		tmpNormal.w = 0;
 		tmpNormal = normalize(tmpNormal);
 
-		float4 NL = clamp(dot(tmpNormal, inData.light), 0, 1);
-
-		float4 reflection = reflect(-inData.light, tmpNormal);
+		float4 NL = clamp(dot(normalize(inData.light), tmpNormal),0,1);
+		float4 reflection = reflect(inData.light, tmpNormal);
 		float4 specular = pow(saturate(dot(reflection, inData.Neyev)), shininess) * specularColor;
 
 
 		if(isTextured != 0)
 		{
-			diffuse = g_texture.Sample(g_sampler, inData.uv) * NL;
-			ambient = g_texture.Sample(g_sampler, inData.uv) * ambientColor;
+			diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * NL;
+			ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambientColor;
 		}
 		else
 		{
-			diffuse = diffuseColor * NL;
-			ambient = diffuseColor * ambientColor;
+			diffuse = lightSource * diffuseColor * NL;
+			ambient = lightSource * diffuseColor * ambientColor;
 		}
 		return diffuse + ambient + specular;
 	}
@@ -136,7 +131,7 @@ float4 PS(VS_OUT inData) : SV_Target
 	{
 		float4 reflection = reflect(normalize(lightPosition), inData.normal);
 		//ここでspecularColor(スペキュラーの値が入っている)を掛けることでハイライト有のやつだけハイライトがつく
-		float4 specular = pow(saturate(dot(normalize(reflection),inData.eyev)), shininess) * specularColor;
+		float4 specular = pow(saturate(dot(reflection,inData.eyev)), shininess) * specularColor;
 
 		if (isTextured == 0)
 		{

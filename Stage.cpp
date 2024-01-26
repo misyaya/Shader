@@ -55,7 +55,7 @@ void Stage::Initialize()
     assert(hArrowZ_ >= 0);
 
     //ドーナツ
-    hDonuts_ = Model::Load("Assets/donuts.fbx");
+    hDonuts_ = Model::Load("Assets/ball.fbx");
     assert(hDonuts_ >= 0);
 
     //ライトの誘導の玉
@@ -78,7 +78,7 @@ void Stage::Initialize()
     arrowZ.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
 
 
-    Camera::SetPosition(XMFLOAT3(0, 0, -20));
+    Camera::SetPosition(XMFLOAT3(0, 0, -10));
     Camera::SetTarget(XMFLOAT3(0, 0, 0));;
 
     IntConstantBuffer();
@@ -174,6 +174,8 @@ void Stage::Draw()
     Model::SetTransform(hLight_, light);
     Model::Draw(hLight_);
 
+    transform_.position_.y = 2.0f;
+    transform_.position_.x = 1.0f;
     Model::SetTransform(hDice_, transform_);
     Model::Draw(hDice_);
 }
