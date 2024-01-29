@@ -438,9 +438,11 @@ HRESULT Direct3D::InitNormalMap()
 
 	//ƒ‰ƒXƒ^ƒ‰ƒCƒUì¬
 	D3D11_RASTERIZER_DESC rdc = {};
-	rdc.CullMode = D3D11_CULL_FRONT; //CULL_BACK = Œ©‚¦‚È‚¢‚Æ‚±‚Í‘‚©‚È‚¢(‰A–ÊÁ‹Ž)
+	rdc.CullMode = D3D11_CULL_BACK; //CULL_BACK = Œ©‚¦‚È‚¢‚Æ‚±‚Í‘‚©‚È‚¢(‰A–ÊÁ‹Ž)
 	rdc.FillMode = D3D11_FILL_SOLID; //solid ‚×‚½“h   Fill “h‚è‚Â‚Ô‚µ
 	rdc.FrontCounterClockwise = FALSE; //Clockwise ŽžŒv‰ñ‚è FrontClockwise ”½ŽžŒvŽü‚è
+	rdc.ScissorEnable = false;
+	rdc.MultisampleEnable = false;
 	hr = pDevice_->CreateRasterizerState(&rdc, &(shaderBundle[SHADER_NORMALMAP].pRasterizerState_));
 	if (FAILED(hr))
 	{
