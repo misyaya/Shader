@@ -135,10 +135,12 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	ZeroMemory(&BlendDesc, sizeof(BlendDesc));
 	BlendDesc.AlphaToCoverageEnable = FALSE;
 	BlendDesc.IndependentBlendEnable = FALSE;
-	BlendDesc.RenderTarget[0].BlendEnable = TRUE;
-	BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+
+	BlendDesc.RenderTarget[0].BlendEnable = TRUE;						//îºìßñæégÇ§Ç©Ç«Ç§Ç©
+	BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;			//Src=sourceÇÃó™Å@ç°ï`âÊÇµÇÊÇ§Ç∆ÇµÇƒÇÈÇ‡ÇÃ
+	BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;	//Ç∑Ç≈Ç…ï`âÊÇ≥ÇÍÇƒÇÈÇ‡ÇÃ
 	BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+
 	BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 	BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
