@@ -30,7 +30,7 @@ void Stage::IntConstantBuffer()
 //コンストラクタ
 Stage::Stage(GameObject* parent)
     :GameObject(parent, "Stage"),
-    hArrowX_(-1), hArrowY_(-1), hArrowZ_(-1), hDonuts_(-1), hLight_(-1), lightSourcePosition_(),hDice_(-1)
+    hArrowX_(-1), hArrowY_(-1), hArrowZ_(-1), hDonuts_(-1), hLight_(-1), lightSourcePosition_(),hDice_(-1),hWater_(-1)
 {
 }
 
@@ -65,6 +65,9 @@ void Stage::Initialize()
     hDice_ = Model::Load("Assets/dice.fbx");
     assert(hDice_ >= 0);
 
+    hWater_ = Model::Load("Assets/Water.fbx");
+    assert(hWater_ >= 0);
+
 
     arrowX.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
     arrowX.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
@@ -77,6 +80,7 @@ void Stage::Initialize()
     arrowZ.rotate_.y = 270.0f;
     arrowZ.position_ = XMFLOAT3(0.0f, 0.5f, -1.0f);
 
+    water_.position_.y = -1.0f;
 
     Camera::SetPosition(XMFLOAT3(0, 0, -10));
     Camera::SetTarget(XMFLOAT3(0, 0, 0));;
@@ -178,6 +182,9 @@ void Stage::Draw()
     transform_.position_.x = 1.0f;
     Model::SetTransform(hDice_, transform_);
     Model::Draw(hDice_);
+
+    Model::SetTransform(hWater_, water_);
+    Model::Draw(hWater_);
 }
 
 //開放

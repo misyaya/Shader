@@ -17,6 +17,7 @@ class Stage : public GameObject
     int hDonuts_;
     int hLight_;
     int hDice_;
+    int hWater_;
 
 
     Transform arrowX;
@@ -24,6 +25,7 @@ class Stage : public GameObject
     Transform arrowZ;
     Transform donutsTr;
     Transform light;
+    Transform water_;
 
     ID3D11Buffer* pCBStageScene_;
 
