@@ -131,7 +131,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	pDevice_->CreateDepthStencilView(pDepthStencil, NULL, &pDepthStencilView);
 
 	//ブレンドステート
-	/*D3D11_BLEND_DESC BlendDesc;
+	D3D11_BLEND_DESC BlendDesc;
 	ZeroMemory(&BlendDesc, sizeof(BlendDesc));
 	BlendDesc.AlphaToCoverageEnable = FALSE;
 	BlendDesc.IndependentBlendEnable = FALSE;
@@ -148,7 +148,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	pDevice_->CreateBlendState(&BlendDesc, &pBlendState);
 
 	float blendFactor[4] = { D3D11_BLEND_ZERO, D3D11_BLEND_ZERO, D3D11_BLEND_ZERO, D3D11_BLEND_ZERO };
-	pContext_->OMSetBlendState(pBlendState, blendFactor, 0xffffffff);*/
+	pContext_->OMSetBlendState(pBlendState, blendFactor, 0xffffffff);
 
 	//データを画面に描画するための一通りの設定（パイプライン）
 	pContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // データの入力種類を指定
@@ -440,7 +440,7 @@ HRESULT Direct3D::InitNormalMap()
 
 	//ラスタライザ作成
 	D3D11_RASTERIZER_DESC rdc = {};
-	rdc.CullMode = D3D11_CULL_BACK; //CULL_BACK = 見えないとこは書かない(陰面消去)
+	rdc.CullMode = D3D11_CULL_FRONT; //CULL_BACK = 見えないとこは書かない(陰面消去)
 	rdc.FillMode = D3D11_FILL_SOLID; //solid べた塗   Fill 塗りつぶし
 	rdc.FrontCounterClockwise = FALSE; //Clockwise 時計回り FrontClockwise 反時計周り
 	rdc.ScissorEnable = false;

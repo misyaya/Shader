@@ -55,8 +55,8 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 	outData.pos = mul(pos, matWVP);
 	outData.uv = (float2)uv;
 
-	float3 tmp = cross(tangent, normal);
-	float4 binormal = { tmp, 0 };
+	float3 binormal = cross(tangent, normal);
+	//float4 binormal = { tmp, 0 };
 	binormal = mul(binormal, matNormal);
 	binormal = normalize(binormal);
 
@@ -65,10 +65,10 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 	normal.w = 0;
 
 	tangent = mul(tangent, matNormal);
-	tangent.w = 0;
+	
 	tangent = normalize(tangent);
-
-	float4 posw = mul(pos, matW);
+	tangent.w = 0;
+	//float4 posw = mul(pos, matW);
 	//outData.eyev = normalize(posw - eyePosition); //ワールド座標の視線ベクトル
 	float4 eye = normalize(mul(pos,matW) - eyePosition);
 	outData.eyev = eye;
@@ -81,7 +81,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 
 	float4 light = normalize(lightPosition);
 	light.w = 0;
-	light = normalize(light);
+	//light = normalize(light);
 
 	outData.color = mul(light, outData.normal);
 	outData.color.w = 0.0;
@@ -110,8 +110,9 @@ float4 PS(VS_OUT inData) : SV_Target
 
 		
 		float4 tmpNormal = normalTex.Sample(g_sampler, inData.uv) * 2.0f - 1.0f;
-		tmpNormal.w = 0;
 		tmpNormal = normalize(tmpNormal);
+		tmpNormal.w = 0;
+		
 
 		float4 NL = clamp(dot(normalize(inData.light), tmpNormal),0,1);
 		float4 reflection = reflect(inData.light, tmpNormal);
@@ -148,9 +149,9 @@ float4 PS(VS_OUT inData) : SV_Target
 		}
 		float4 result = diffuse + ambient + specular;
 
-		/*if (isTextured)
+		if (isTextured)
 			result.a = inData.uv.x;
-		return result;*/
+		return result;
 
 		return diffuse + ambient + specular;
 	}
