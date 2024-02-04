@@ -82,6 +82,9 @@ void Stage::Initialize()
 
     water_.position_.y = -1.0f;
 
+    transform_.position_.z = -1.0f;
+    //transform_.position_.x = 3.0f;
+
     Camera::SetPosition(XMFLOAT3(0, 0, -10));
     Camera::SetTarget(XMFLOAT3(0, 0, 0));;
 
@@ -178,8 +181,7 @@ void Stage::Draw()
     Model::SetTransform(hLight_, light);
     Model::Draw(hLight_);
 
-    transform_.position_.y = 2.0f;
-    transform_.position_.x = 1.0f;
+ 
     Model::SetTransform(hDice_, transform_);
     Model::Draw(hDice_);
 
