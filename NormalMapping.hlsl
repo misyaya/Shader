@@ -153,6 +153,6 @@ float4 PS(VS_OUT inData) : SV_Target
 			result.a = inData.uv.x;
 		return result;
 
-		return diffuse + ambient + specular;
+		//return diffuse + ambient + specular;
 	}
 }

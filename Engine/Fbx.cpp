@@ -329,7 +329,11 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 void Fbx::Draw(Transform& transform)
 {
-	std::sort(pMaterialList_, pMaterialList_ + materialCount_, CompareMaterials);
+	// Draw 関数内でソート関数の呼び出しを修正
+	std::sort(pMaterialList_, pMaterialList_ + materialCount_, &Fbx::CompareMaterials);
+
+
+
 
 	//Direct3D::SetShader(SHADER_OUTLINE);
 	Direct3D::SetShader(SHADER_NORMALMAP);
@@ -409,6 +413,11 @@ void Fbx::Release()
 	SAFE_RELEASE(pVertexBuffer_);
 }
 
-bool CompareMaterials(const MATERIAL& a, const MATERIAL& b)) {
-	return a.diffuse.w < b.diffuse.w;
+
+
+
+bool Fbx::CompareMaterials(const MATERIAL& a, const MATERIAL& b)
+{
+	// 既存の比較ロジックをここに追加
+	return a.diffuse.x < b.diffuse.x;
 }

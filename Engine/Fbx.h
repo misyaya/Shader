@@ -16,6 +16,7 @@ class Texture;  //前方宣言
 
 class Fbx
 {
+public :
 	//マテリアル
 	struct MATERIAL
 	{
@@ -26,7 +27,7 @@ class Fbx
 		XMFLOAT4 specular;
 		float shininess;
 	};
-
+private:
 	//ambient specular shinessも追加する
 	struct CONSTANT_BUFFER
 	{
@@ -77,4 +78,7 @@ public:
 	XMFLOAT4 GetLightPos() { return (lightSourcePosition_); }
 	void Draw(Transform& transform);
 	void Release();
+
+	static bool CompareMaterials(const MATERIAL& a, const MATERIAL& b);
+
 };

@@ -14,7 +14,7 @@ namespace Direct3D
 	ID3D11RenderTargetView* pRenderTargetView_ = nullptr;	//レンダーターゲットビュー
 	ID3D11Texture2D* pDepthStencil = nullptr;			//深度ステンシル
 	ID3D11DepthStencilView* pDepthStencilView = nullptr;		//深度ステンシルビュー
-
+	ID3D11DepthStencilState* pDepthStencilState_ = nullptr;
 	ID3D11BlendState* pBlendState;
 
 	struct SHADER_BUNDLE
@@ -137,8 +137,8 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	BlendDesc.IndependentBlendEnable = FALSE;
 
 	BlendDesc.RenderTarget[0].BlendEnable = TRUE;						//半透明使うかどうか
-	BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;			//Src=sourceの略　今描画しようとしてるもの
-	BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;	//すでに描画されてるもの
+	BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;			//Src=sourceの略　今描画しようとしてるもの
+	BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_COLOR;	//すでに描画されてるもの
 	BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 
 	BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
@@ -517,7 +517,7 @@ HRESULT Direct3D::InitShaderPointLight()
 		MessageBox(nullptr, "ラスタライザの作成に失敗しました", "エラー", MB_OK);
 		return hr;
 	}
-
+	return S_OK;
 }
 
 HRESULT Direct3D::InitShader2D()
