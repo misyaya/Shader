@@ -613,10 +613,8 @@ void Direct3D::BeginDraw()
 	pContext_->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 
-	// Fbx オブジェクトの描画
-	//pFbxObject->Draw(transformForFbx);
 
-	// 他の描画処理...
+	
 
 	// ブレンドステートを元に戻す（オプション）
 	pContext_->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);

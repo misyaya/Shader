@@ -166,14 +166,17 @@ void Stage::Update()
 //描画
 void Stage::Draw()
 {
-    Model::SetTransform(hArrowX_, arrowX);
+    Model::SetTransform(hDice_, transform_);
+    Model::Draw(hDice_);
+
+   /* Model::SetTransform(hArrowX_, arrowX);
     Model::Draw(hArrowX_);
 
     Model::SetTransform(hArrowY_, arrowY);
     Model::Draw(hArrowY_);
 
     Model::SetTransform(hArrowZ_, arrowZ);
-    Model::Draw(hArrowZ_);
+    Model::Draw(hArrowZ_);*/
 
     Model::SetTransform(hDonuts_, donutsTr);
     Model::Draw(hDonuts_);
@@ -182,8 +185,6 @@ void Stage::Draw()
     Model::Draw(hLight_);
 
  
-    Model::SetTransform(hDice_, transform_);
-    Model::Draw(hDice_);
 
     Model::SetTransform(hWater_, water_);
     Model::Draw(hWater_);
