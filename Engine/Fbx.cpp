@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "Texture.h"
 #include <assert.h>
+#include <algorithm>
 
 const XMFLOAT4 LIGHT_DIERECTION = { -1,-5,-5,-1 };
 
@@ -328,6 +329,8 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 void Fbx::Draw(Transform& transform)
 {
+	std::sort(pMaterialList_, pMaterialList_ + materialCount_, CompareMaterials);
+
 	//Direct3D::SetShader(SHADER_OUTLINE);
 	Direct3D::SetShader(SHADER_NORMALMAP);
 	//Direct3D::SetShader(SHADER_TOON);
@@ -404,4 +407,8 @@ void Fbx::Release()
 	SAFE_RELEASE(pConstantBuffer_);
 	//SAFE_RELEASE(pIndexBuffer_);
 	SAFE_RELEASE(pVertexBuffer_);
+}
+
+bool CompareMaterials(const MATERIAL& a, const MATERIAL& b)) {
+	return a.diffuse.w < b.diffuse.w;
 }

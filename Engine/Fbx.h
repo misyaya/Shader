@@ -25,7 +25,6 @@ class Fbx
 		XMFLOAT4 ambient;
 		XMFLOAT4 specular;
 		float shininess;
-		float distanceToCamera;  // カメラからの距離
 	};
 
 	//ambient specular shinessも追加する
