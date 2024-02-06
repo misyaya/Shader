@@ -329,7 +329,7 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 void Fbx::Draw(Transform& transform)
 {
-	// Draw 関数内でソート関数の呼び出しを修正
+	//
 	std::sort(pMaterialList_, pMaterialList_ + materialCount_, &Fbx::CompareMaterials);
 
 

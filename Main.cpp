@@ -7,6 +7,7 @@
 #include "Engine/RootJob.h"
 #include "Engine/Model.h"
 #include "Engine/Quad.h"
+#include "Engine/Sprite.h"
 
 #pragma comment(lib, "winmm.lib")
 
@@ -86,6 +87,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 	Camera::Initialize(winW, winH);
 
+	Sprite* pSprite = new Sprite();
+	hr = pSprite->Initialize();
 
 	//Quad* pQuad = new Quad;
 	//hr = pQuad->Initialize();
@@ -161,6 +164,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			mat.scale_.x = 2.0f;
 			mat.scale_.y = 2.0f;
 			//pQuad->Draw(mat);
+			pSprite->Draw(mat);
 			//ルートジョブから、すべてのオブジェクトのドローを呼ぶ
 			pRootJob->DrawSub();
 
@@ -172,6 +176,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	Model::Release();
 	pRootJob->ReleaseSub();
 	//SAFE_RELEASE(pQuad);
+	SAFE_RELEASE(pSprite);
 	SAFE_DELETE(pRootJob);
 	Input::Release();
 	Direct3D::Release();

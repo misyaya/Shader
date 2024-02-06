@@ -8,7 +8,7 @@ Sprite::Sprite() :
 	vertexNum_(0), pVertexBuffer_(nullptr),
 	indexNum(0), pIndexBuffer_(nullptr),
 	pConstantBuffer_(nullptr),
-	pTexture_(nullptr)
+	pTexture_(nullptr), scrollVal(0)
 {
 }
 
@@ -54,6 +54,8 @@ HRESULT Sprite::Initialize()
 //描画
 void Sprite::Draw(Transform& transform)
 {
+	Direct3D::SetShader(SHADER_2D);
+
 	transform.Calclation();//トランスフォームを計算
 
 	//コンスタントバッファに情報を渡す
@@ -64,6 +66,60 @@ void Sprite::Draw(Transform& transform)
 
 	//描画
 	Direct3D::pContext_->DrawIndexed(indexNum, 0, 0);
+}
+
+void Sprite::Draw(Transform& transform, RECT rect, float alpha)
+{
+	scrollVal = scrollVal + 0.001f;
+
+	Direct3D::SetShader(SHADER_TYPE::SHADER_2D);
+	UINT stride = sizeof(VERTEX);
+	UINT offset = 0;
+	Direct3D::pContext_->IASetVertexBuffers(0, 1, &pVertexBuffer_, &stride, &offset);
+	Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);
+	Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);
+	Direct3D::SetDepthBufferWriteEnable(false);
+
+	stride = sizeof(int);
+	offset = 0;
+	Direct3D::pContext_->IASetIndexBuffer(pIndexBuffer_, DXGI_FORMAT_R32_UINT, 0);
+
+	D3D11_MAPPED_SUBRESOURCE pdata;
+	CONSTANT_BUFFER cb;
+
+	transform.Calclation();
+
+	XMMATRIX cut = XMMatrixScaling((float)rect.right, (float)rect.bottom, 1);
+
+	XMMATRIX view = XMMatrixScaling(1.0f / Direct3D::screenSize.cx, 1.0f / Direct3D::screenSize.cy, 1.0f);
+
+	XMMATRIX world = cut * transform.matScale_ * transform.matRotate_ * view * transform.matTranslate_;
+	cb.world = XMMatrixTranspose(world);
+	
+	XMMATRIX mTexTrans = XMMatrixTranslation((float)rect.left / (float)pTexture_->GetTextureSize().x, (float)rect.bottom / (float)pTexture_->GetTextureSize().y, 1.0f);
+	XMMATRIX mTexScale = XMMatrixScaling((float)rect.right / (float)pTexture_->GetTextureSize().x, (float)rect.bottom / (float)pTexture_->GetTextureSize().y, 1.0f);
+
+	XMMATRIX mTexel = mTexScale * mTexTrans;
+	cb.uvTrans = XMMatrixTranspose(mTexel);
+
+	cb.color = XMFLOAT4(1, 1, 1, alpha);
+
+	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);
+	memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));
+
+	ID3D11SamplerState* pSampler = pTexture_->GetSampler();
+	Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
+
+	ID3D11ShaderResourceView* pSRV = pTexture_->GetSRV();
+	Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
+
+	Direct3D::pContext_->Unmap(pConstantBuffer_, 0);
+
+	SetBufferToPipeline();
+
+	Direct3D::pContext_->DrawIndexed(indexNum, 0, 0);
+	Direct3D::SetShader(SHADER_TYPE::SHADER_3D);
+	Direct3D::SetDepthBufferWriteEnable(true);
 }
 
 //解放
@@ -192,7 +248,7 @@ HRESULT Sprite::LoadTexture()
 	pTexture_ = new Texture;
 
 	HRESULT hr;
-	hr = pTexture_->Load("Assets\\Dice.png");
+	hr = pTexture_->Load("Assets\\apple.png");
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, "テクスチャの作成に失敗しました", "エラー", MB_OK);
@@ -205,7 +261,7 @@ HRESULT Sprite::LoadTexture()
 void Sprite::PassDataToCB(XMMATRIX worldMatrix)
 {
 	CONSTANT_BUFFER cb;
-	cb.matW = XMMatrixTranspose(worldMatrix);
+	cb.world = XMMatrixTranspose(worldMatrix);
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める

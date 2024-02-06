@@ -10,7 +10,10 @@ SamplerState	g_sampler : register(s0);	//サンプラー
 //───────────────────────────────────────
 cbuffer global
 {
-	float4x4	matW;			//ワールド行列
+	matrix	g_matWorld;			//ワールド行列
+	matrix  g_matTexture;
+	float4  g_vecColor;
+	float	g_scroll;
 };
 
 //───────────────────────────────────────
@@ -32,8 +35,8 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD)
 
 	//ローカル座標に、ワールド行列をかけて
 	//ワールド座標に変換し、ピクセルシェーダーへ
-	outData.pos = mul(pos, matW);
-	outData.uv = uv;
+	outData.pos = mul(pos, g_matWorld);
+	outData.uv = mul(uv, g_matTexture);
 
 
 
@@ -46,7 +49,12 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD)
 //───────────────────────────────────────
 float4 PS(VS_OUT inData) : SV_Target
 {
+	float4 output;
+	float2 tmpUV = inData.uv;
+	tmpUV.x = tmpUV.x + g_scroll;
 
-		return g_texture.Sample(g_sampler, inData.uv);
+	output = g_vecColor * g_texture.Sample(g_sampler, tmpUV);
+	return output;
 
+	//return g_texture.Sample(g_sampler, inData.uv);
 }

@@ -14,7 +14,9 @@ class Sprite
 	//コンスタントバッファー
 	struct CONSTANT_BUFFER
 	{
-		XMMATRIX	matW;		//ワールド行列
+		XMMATRIX	world;		//ワールド行列
+		XMMATRIX	uvTrans;
+		XMFLOAT4	color;
 	};
 
 	//頂点情報
@@ -22,6 +24,8 @@ class Sprite
 	{
 		XMVECTOR position;	//位置
 		XMVECTOR uv;		//UV
+		XMFLOAT4 color;
+		float scroll;
 	};
 
 protected:
@@ -50,10 +54,13 @@ public:
 	//引数：worldMatrix	ワールド行列
 	void Draw(Transform& transform);
 
+
+	void Draw(Transform& transform, RECT rect, float alpha);
+
 	//解放
 	void Release();
 
-
+	float scrollVal;
 
 private:
 	//---------Initializeから呼ばれる関数---------

@@ -26,6 +26,7 @@ namespace Direct3D
 	};
 
 	SHADER_BUNDLE shaderBundle[SHADER_MAX];
+	SIZE screenSize;
 }
 
 
@@ -167,6 +168,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 		return hr;
 	}
 
+	screenSize = { winW, winH };
 	return S_OK;
 }
 
@@ -652,6 +654,18 @@ void Direct3D::Release()
 	SAFE_RELEASE(pContext_);
 	SAFE_RELEASE(pDevice_);
 
+}
+
+void Direct3D::SetDepthBufferWriteEnable(bool isWrite)
+{
+	if (isWrite)
+	{
+		pContext_->OMSetRenderTargets(1, &pRenderTargetView_, pDepthStencilView);
+	}
+	else
+	{
+		pContext_->OMSetRenderTargets(1, &pRenderTargetView_, nullptr);
+	}
 }
 
 
