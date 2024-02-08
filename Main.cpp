@@ -164,7 +164,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			mat.scale_.x = 2.0f;
 			mat.scale_.y = 2.0f;
 			//pQuad->Draw(mat);
-			pSprite->Draw(mat);
+			//pSprite->Draw(mat);
 			//ルートジョブから、すべてのオブジェクトのドローを呼ぶ
 			pRootJob->DrawSub();
 

@@ -254,7 +254,7 @@ HRESULT Direct3D::InitShader3D()
 
 	//ラスタライザ作成
 	D3D11_RASTERIZER_DESC rdc = {};
-	rdc.CullMode = D3D11_CULL_FRONT; //CULL_BACK = 見えないとこは書かない(陰面消去)
+	rdc.CullMode = D3D11_CULL_BACK; //CULL_BACK = 見えないとこは書かない(陰面消去)
 	rdc.FillMode = D3D11_FILL_SOLID; //solid べた塗   Fill 塗りつぶし
 	rdc.FrontCounterClockwise = FALSE; //Clockwise 時計回り FrontClockwise 反時計周り
 	hr = pDevice_->CreateRasterizerState(&rdc, &(shaderBundle[SHADER_3D].pRasterizerState_));
@@ -600,7 +600,6 @@ void Direct3D::SetShader(SHADER_TYPE type)
 
 //描画開始
 void Direct3D::BeginDraw()
-
 {
 	//背景の色
 	float clearColor[4] = { 0.0f, 0.5f, 0.5f, 1.0f };//R,G,B,A
@@ -618,8 +617,7 @@ void Direct3D::BeginDraw()
 
 	
 
-	// ブレンドステートを元に戻す（オプション）
-	pContext_->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
+	
 
 }
 
@@ -628,8 +626,11 @@ void Direct3D::BeginDraw()
 //描画終了
 void Direct3D::EndDraw()
 {
+	// ブレンドステートを元に戻す（オプション）
+	pContext_->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
 	//スワップ（バックバッファを表に表示する）
 	pSwapChain_->Present(0, 0);
+	
 }
 
 

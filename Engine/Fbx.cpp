@@ -330,14 +330,11 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 void Fbx::Draw(Transform& transform)
 {
 	//
-	std::sort(pMaterialList_, pMaterialList_ + materialCount_, &Fbx::CompareMaterials);
-
-
-
+	//std::sort(pMaterialList_, pMaterialList_ + materialCount_, &Fbx::CompareMaterials);
 
 	//Direct3D::SetShader(SHADER_OUTLINE);
 	Direct3D::SetShader(SHADER_NORMALMAP);
-	//Direct3D::SetShader(SHADER_TOON);
+	//Direct3D::SetShader(SHADER_3D);
 
 	transform.Calclation();//トランスフォームを計算
 

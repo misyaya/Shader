@@ -62,7 +62,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 
 	//ñ@ê¸ÇâÒì]
 	outData.normal = normalize(mul(normal, matNormal));
-	normal.w = 0;
+	outData.normal.w = 0;
 
 	tangent = mul(tangent, matNormal);
 	
@@ -81,7 +81,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 
 	float4 light = normalize(lightPosition);
 	light.w = 0;
-	//light = normalize(light);
+	light = normalize(light);
 
 	outData.color = mul(light, outData.normal);
 	outData.color.w = 0.0;
@@ -151,8 +151,9 @@ float4 PS(VS_OUT inData) : SV_Target
 
 		if (isTextured)
 			result.a = inData.uv.x;
+
+		//result.a = (result.r + result.g + result.b) /3 + 0.3f;
 		return result;
 
-		//return diffuse + ambient + specular;
 	}
 }
